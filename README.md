@@ -12,7 +12,7 @@
 <div align="center">
 
 >![Generic badge](https://img.shields.io/badge/version-0.1.0-silver.svg)
-[![Generic badge](https://img.shields.io/badge/Read_the_docs-wiki-silver.svg)](https://repositorio.smartgreen.net.br/asgard/valkyrie/wikis/home) 
+[![Generic badge](https://img.shields.io/badge/Read_the_docs-wiki-silver.svg)](https://github.com/brunolcarli/Lisa/wiki)
  
 
 
