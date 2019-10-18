@@ -1,0 +1,1 @@
+export DJANGO_SECRET_KEY=djang_skey
