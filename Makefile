@@ -4,3 +4,6 @@ run:
 migrate:
 	python manage.py makemigrations --settings=lisa.settings.development
 	python manage.py migrate --settings=lisa.settings.development
+
+install:
+	pip install -r lisa/requirements/development.txt
