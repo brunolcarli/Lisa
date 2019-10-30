@@ -6,7 +6,7 @@
 contact info: brunolcarli@gmail.com
 """
 import graphene
-from nltk import sent_tokenize, word_tokenize
+from nltk import sent_tokenize, word_tokenize, pos_tag
 
 
 class Query(graphene.ObjectType):
@@ -45,6 +45,40 @@ class Query(graphene.ObjectType):
         tokenized = word_tokenize(text)
 
         return tokenized
+
+    part_of_speech = graphene.List(
+        graphene.List(
+            graphene.String
+        ),
+        non_tokenized_text=graphene.String(
+            description='Process part of speech with a non tokenized input.'
+        ),
+        tokenized_text=graphene.List(
+            graphene.String,
+            description='Process part of speech with a tokenized input.'
+        ),
+        description='Process request for part of speech.'
+    )
+    def resolve_part_of_speech(self, info, **kwargs):
+        """Processa requisiçãode aprt of speech"""
+
+        # não pode não passar nenhum filtro
+        if not kwargs:
+            raise Exception('Please choose a filter input option!')
+
+        # captura os possíveis filtros
+        tokenized = kwargs.get('tokenized_text')
+        non_tokenized = kwargs.get('non_tokenized_text')
+
+        # não pode passar os dois filtros ao mesmo tempo
+        if tokenized and non_tokenized:
+            raise Exception('Please, input only one filter!')
+
+        elif tokenized:
+            return pos_tag(tokenized)
+
+        else:
+            return pos_tag(word_tokenize(non_tokenized))
 
     lisa = graphene.List(graphene.String)
     def resolve_lisa(self, info, **kwargs):
