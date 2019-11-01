@@ -1,5 +1,5 @@
 <table align="center"><tr><td align="center" width="9999">
-<img src="https://upload.wikimedia.org/wikipedia/pt/e/ec/Lisa_Simpson.png" align="center" width="100" alt="Project icon">
+<img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ec/Lisa_Simpson.png/220px-Lisa_Simpson.png" align="center" width="100" alt="Project icon">
 
 
 # LISA
