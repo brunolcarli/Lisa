@@ -17,6 +17,9 @@ class Query(graphene.ObjectType):
         de sentimentos da API.
     """
 
+    ##########################################################################
+    # SENTENCE SEGMENTATION
+    ##########################################################################
     sentence_segmentation = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -32,6 +35,9 @@ class Query(graphene.ObjectType):
 
         return segmented_text
 
+    ##########################################################################
+    # WORD TOKENIZE
+    ##########################################################################
     word_tokenize = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -47,6 +53,9 @@ class Query(graphene.ObjectType):
 
         return tokenized
 
+    ##########################################################################
+    # PART OF SPEECH
+    ##########################################################################
     part_of_speech = graphene.List(
         graphene.List(
             graphene.String
@@ -81,6 +90,9 @@ class Query(graphene.ObjectType):
         else:
             return pos_tag(word_tokenize(non_tokenized))
 
+    ##########################################################################
+    # LEMMING
+    ##########################################################################
     lemmatize = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -106,6 +118,9 @@ class Query(graphene.ObjectType):
 
         return [token.lemma_ for token in data]
 
+    ##########################################################################
+    # OVO DE PÁSCOA
+    ##########################################################################
     lisa = graphene.List(graphene.String)
     def resolve_lisa(self, info, **kwargs):
         """Isso é um ovo de páscoa."""
