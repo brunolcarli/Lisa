@@ -6,6 +6,7 @@
 contact info: brunolcarli@gmail.com
 """
 import graphene
+from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 
 
@@ -16,6 +17,9 @@ class Query(graphene.ObjectType):
         de sentimentos da API.
     """
 
+    ##########################################################################
+    # SENTENCE SEGMENTATION
+    ##########################################################################
     sentence_segmentation = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -31,6 +35,9 @@ class Query(graphene.ObjectType):
 
         return segmented_text
 
+    ##########################################################################
+    # WORD TOKENIZE
+    ##########################################################################
     word_tokenize = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -46,6 +53,9 @@ class Query(graphene.ObjectType):
 
         return tokenized
 
+    ##########################################################################
+    # PART OF SPEECH
+    ##########################################################################
     part_of_speech = graphene.List(
         graphene.List(
             graphene.String
@@ -80,6 +90,37 @@ class Query(graphene.ObjectType):
         else:
             return pos_tag(word_tokenize(non_tokenized))
 
+    ##########################################################################
+    # LEMMING
+    ##########################################################################
+    lemmatize = graphene.List(
+        graphene.String,
+        text=graphene.String(
+            description='Process lemmatization with a non tokenized text input.'
+        ),
+        description='Lemmatize an inputed text or list of words.'
+    )
+    def resolve_lemmatize(self, info, **kwargs):
+        """
+        Retorna o processamento de lematização de uma entrada de texto ou
+        lista de palavras.
+        """
+
+        # Não pode não fornecer nenhum filtro
+        if not kwargs:
+            raise Exception('Please choose a filter input option!')
+
+        # captura os possíveis filtros
+        text = kwargs.get('text')
+
+        tokens = settings.SPACY(text)
+        data = [token for token in tokens]
+
+        return [token.lemma_ for token in data]
+
+    ##########################################################################
+    # OVO DE PÁSCOA
+    ##########################################################################
     lisa = graphene.List(graphene.String)
     def resolve_lisa(self, info, **kwargs):
         """Isso é um ovo de páscoa."""
