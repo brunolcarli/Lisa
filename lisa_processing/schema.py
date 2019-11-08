@@ -7,8 +7,9 @@ contact info: brunolcarli@gmail.com
 """
 import graphene
 from django.conf import settings
+from lisa_processing.enums import Algorithms
 from nltk import sent_tokenize, word_tokenize, pos_tag
-
+from nltk.corpus import stopwords
 
 class Query(graphene.ObjectType):
     """
@@ -117,6 +118,36 @@ class Query(graphene.ObjectType):
         data = [token for token in tokens]
 
         return [token.lemma_ for token in data]
+
+    remove_stop_words = graphene.List(
+        graphene.String,
+        text=graphene.String(
+            required=True,
+            description='Input text for process the stop words removal.'
+        ),
+        algorithm=graphene.Argument(
+            Algorithms,
+            description='Defines an processing algorithm. Default NLTK'
+        ),
+        description='Remove stop words from inputed text.'
+    )
+
+    def resolve_remove_stop_words(self, info, **kwargs):
+        """
+        Remove as palavras vazias do texto inserido e retorna uma lista das
+        palávras restantes no texto.
+        """
+        algorithm = kwargs.get('algorithm', 'nltk')
+        text_input = kwargs.get('text')
+        portuguese_stopwords = stopwords.words('portuguese')
+
+        if algorithm == 'nltk':
+            tokens = word_tokenize(text_input)
+            return [word for word in tokens if word not in portuguese_stopwords]
+
+        doc = settings.SPACY(text_input)
+        return [word for word in doc if not word.is_stop]
+
 
     ##########################################################################
     # OVO DE PÁSCOA
