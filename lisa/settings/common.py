@@ -13,6 +13,16 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import spacy
 
+
+lisa_api = r'''
+====================
+╦  ╦╔═╗╔═╗  ╔═╗╔═╗╦
+║  ║╚═╗╠═╣  ╠═╣╠═╝║
+╩═╝╩╚═╝╩ ╩  ╩ ╩╩  ╩
+====================
+'''
+print(lisa_api)
+
 # carrega o spacy para o português
 SPACY = spacy.load('pt')
 
