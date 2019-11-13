@@ -11,6 +11,16 @@ from lisa_processing.enums import Algorithms
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
 
+
+class DependencyParseType(graphene.ObjectType):
+    """
+    Padrão de resposta para processamentos de parsing de dependência.
+    """
+    element = graphene.String()
+    children = graphene.List(graphene.String)
+    ancestors = graphene.List(graphene.String)
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -148,6 +158,31 @@ class Query(graphene.ObjectType):
         doc = settings.SPACY(text_input)
         return [word for word in doc if not word.is_stop]
 
+    dependency_parse = graphene.List(
+        DependencyParseType,
+        text=graphene.String(
+            description='Input text for dependency parsing processing.',
+            required=True
+        ),
+
+    )
+    def resolve_dependency_parse(self, info, **kwargs):
+        """
+        Processa o parsing de dependências e retorna uma lista contendo
+        as palávras da sentença, seus dependentes e antecessores.
+        """
+        text = kwargs.get('text')
+        doc = settings.SPACY(text)
+        result = []
+
+        for word in doc:
+            result.append({
+                'element': word,
+                'children': list(word.children),
+                'ancestors': list(word.ancestors)
+            })
+
+        return result
 
     ##########################################################################
     # OVO DE PÁSCOA
