@@ -44,4 +44,4 @@ $ make run
 ```
 
 
-O serviço estará disponível em `localhost:8000/graphql`
+O serviço estará disponível em `localhost:2154/graphql`
