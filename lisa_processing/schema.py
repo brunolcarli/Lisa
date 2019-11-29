@@ -21,6 +21,14 @@ class DependencyParseType(graphene.ObjectType):
     ancestors = graphene.List(graphene.String)
 
 
+class NamedEntityType(graphene.ObjectType):
+    """
+    Padrão de resposta para processamento de entidades nomeadas.
+    """
+    term = graphene.String()
+    entity = graphene.String()
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -129,6 +137,9 @@ class Query(graphene.ObjectType):
 
         return [token.lemma_ for token in data]
 
+    ##########################################################################
+    # STOP WORDS
+    ##########################################################################
     remove_stop_words = graphene.List(
         graphene.String,
         text=graphene.String(
@@ -158,14 +169,17 @@ class Query(graphene.ObjectType):
         doc = settings.SPACY(text_input)
         return [word for word in doc if not word.is_stop]
 
+    ##########################################################################
+    # DEPENDENCY PARSING
+    ##########################################################################
     dependency_parse = graphene.List(
         DependencyParseType,
         text=graphene.String(
             description='Input text for dependency parsing processing.',
             required=True
         ),
-
     )
+
     def resolve_dependency_parse(self, info, **kwargs):
         """
         Processa o parsing de dependências e retorna uma lista contendo
@@ -183,6 +197,26 @@ class Query(graphene.ObjectType):
             })
 
         return result
+
+    ##########################################################################
+    # NAMED ENTITY
+    ##########################################################################
+    named_entity = graphene.List(
+        NamedEntityType,
+        text=graphene.String(
+            description='Input text for named entity processing.',
+            required=True
+        ),
+    )
+
+    def resolve_named_entity(self, info, **kwargs):
+        """
+        Processa a resolução de entidades nomeadas a partir de um texto.
+        """
+        text_input = kwargs.get('text')
+        doc = settings.SPACY(text_input)
+        return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
+
 
     ##########################################################################
     # OVO DE PÁSCOA
