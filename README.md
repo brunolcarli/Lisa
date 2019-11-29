@@ -45,3 +45,11 @@ $ make run
 
 
 O serviço estará disponível em `localhost:2154/graphql`
+
+<hr />
+
+<table align="center"><tr><td align="center" width="9999">
+<img src="https://uploaddeimagens.com.br/images/002/520/430/full/Peek_29-11-2019_17-02.gif?1575057764" align="center" width="1000" alt="Project icon">
+</td></tr>
+
+</table>    
