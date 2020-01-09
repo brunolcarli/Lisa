@@ -124,3 +124,7 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'lisa.schema.schema',
 }
+
+CORPORA_PATH = {
+    'sentilex_lem': 'corpora/lexical_data/SentiLex-lem-PT02.txt',
+}
