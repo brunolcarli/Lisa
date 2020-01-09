@@ -1,40 +1,41 @@
-# """
-# Módulo para funcionalidades relacionadas ao Processamento de Linguagem
-# Natural.
-# """
+"""
+Módulo para funcionalidades relacionadas ao Processamento de Linguagem
+Natural.
+"""
 
 # import re
 # from random import choice
 # from string import punctuation
 # from nltk import sent_tokenize, word_tokenize
 # from nltk.corpus import stopwords
-# from nltk.stem import SnowballStemmer
+from nltk.stem import SnowballStemmer
+from django.conf import settings
 
 
-# def get_word_polarity(word_input):
-#     """
-#     Retorna a polaridade de uma palavra
+def get_word_polarity(word_input):
+    """
+    Retorna a polaridade de uma palavra
 
-#     param : word_input : <str>
-#     return : <int>
-#     """
-#     # Monta o dicionario de dados a paritr do córpus léxico
-#     data = {}
-#     # TODO: testar isso
-#     with open('/corpora/lexical_data/SentiLex-lem-PT02.txt', 'r') as f:
-#         for row in f.readlines():
-#             splitter = row.find('.')
-#             word = (row[:splitter])
-#             word = stemming([word])[0]
-#             pol_loc = row.find('POL')
-#             polarity = (row[pol_loc+7:pol_loc+9]).replace(';','')
-#             data[word] = polarity
+    param : word_input : <str>
+    return : <int>
+    """
+    # Monta o dicionario de dados a paritr do córpus léxico
+    data = {}
+    # TODO: testar isso
+    with open(settings.CORPORA_PATH['sentilex_lem'], 'r') as f:
+        for row in f.readlines():
+            splitter = row.find('.')
+            word = (row[:splitter])
+            word = stemming([word])[0]
+            pol_loc = row.find('POL')
+            polarity = (row[pol_loc+7:pol_loc+9]).replace(';','')
+            data[word] = polarity
 
-#     # verifica se a palavra existe no corpus lexico
-#     if word_input.lower() in data.keys():
-#         return int(data[word_input.lower()])
-#     else:
-#         return 0
+    # verifica se a palavra existe no corpus lexico
+    if word_input.lower() in data.keys():
+        return int(data[word_input.lower()])
+    else:
+        return 0
 
 
 # def text_classifier(text):
@@ -173,15 +174,15 @@
 #     return [token for token in sentence if token not in punctuation]
 
 
-# def stemming(sentence):
-#     """
-#     Realiza o stemming nos tokens da sentença.
+def stemming(sentence):
+    """
+    Realiza o stemming nos tokens da sentença.
 
-#     param : sentecen : <list>
-#     return <list>
-#     """
-#     stemmer = SnowballStemmer('portuguese')
-#     return [stemmer.stem(token) for token in sentence]
+    param : sentecen : <list>
+    return <list>
+    """
+    stemmer = SnowballStemmer('portuguese')
+    return [stemmer.stem(token) for token in sentence]
 
 
 # def get_offense_level(text):
