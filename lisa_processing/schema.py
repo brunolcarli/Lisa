@@ -1,4 +1,4 @@
-"""
+r"""
    ___ __ _     _  _ ___    __ __    __    _ 
 |   | (_ |_|   |_||_) |    (_ /  |_||_ |V||_|
 |___|___)| |   | ||  _|_   __)\__| ||__| || |
@@ -7,9 +7,10 @@ contact info: brunolcarli@gmail.com
 """
 import graphene
 from django.conf import settings
-from lisa_processing.enums import Algorithms
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
+from lisa_processing.enums import Algorithms
+from lisa_processing.util.nlp import get_word_polarity
 
 
 class DependencyParseType(graphene.ObjectType):
@@ -29,11 +30,20 @@ class NamedEntityType(graphene.ObjectType):
     entity = graphene.String()
 
 
+class WordPolarityType(graphene.ObjectType):
+    """
+    Padrão de resposta para processamentos de identificação de polaridades
+    de palávras.
+    """
+    word = graphene.String()
+    polarity = graphene.Float()
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
-        Dispõe as consultas de processamentode linguagem natural e analise
-        de sentimentos da API.
+        Disponibiliza as consultas de processamento de linguagem natural e
+        análise de sentimentos da API.
     """
 
     ##########################################################################
@@ -48,7 +58,9 @@ class Query(graphene.ObjectType):
         description='Process a sentence segmentation over a text input.'
     )
     def resolve_sentence_segmentation(self, info, **kwargs):
-        """Processa a requisição de sentence segmentation conforme RF001."""
+        """
+        Processa a requisição de sentence segmentation conforme RF001.
+        """
         text = kwargs.get('text')
         segmented_text = sent_tokenize(text)
 
@@ -66,7 +78,9 @@ class Query(graphene.ObjectType):
         description='Process the word tokenizer request.'
     )
     def resolve_word_tokenize(self, info, **kwargs):
-        """Processa requisiçõa para atomização palavras"""
+        """
+        Processa requisição para atomização
+        """
         text = kwargs.get('text')
         tokenized = word_tokenize(text)
 
@@ -89,7 +103,9 @@ class Query(graphene.ObjectType):
         description='Process request for part of speech.'
     )
     def resolve_part_of_speech(self, info, **kwargs):
-        """Processa requisiçãode aprt of speech"""
+        """
+        Processa requisição de part of speech
+        """
 
         # não pode não passar nenhum filtro
         if not kwargs:
@@ -217,27 +233,48 @@ class Query(graphene.ObjectType):
         doc = settings.SPACY(text_input)
         return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
 
+    ##########################################################################
+    # Word Polarity
+    ##########################################################################
+    word_polarity = graphene.List(
+        WordPolarityType,
+        word_list=graphene.List(
+            graphene.String,
+            description='List of words to process',
+            required=True
+        ),
+    )
+    def resolve_word_polarity(self, info, **kwargs):
+        """
+        Processa a resolução de polaridades de palavras.
+        O Processamento aceita uma lista de palávras, retornando desta forma,
+        uma lista de objetos contendo a palávra processada e sua polaridade.
+        """
+        word_List = kwargs.get('word_list')
+        return [WordPolarityType(word=word, polarity=get_word_polarity(word)) for word in word_List]
 
     ##########################################################################
     # OVO DE PÁSCOA
     ##########################################################################
     lisa = graphene.List(graphene.String)
     def resolve_lisa(self, info, **kwargs):
-        """Isso é um ovo de páscoa."""
+        """
+        Isso é um ovo de páscoa.
+        """
         lisa_ascii = [          
             r"      /\  /\ ",
-            '  ___/  \/  \___',
-            ' |              /',
-            ' |             /_',
-            ' /      \_| \_| /',
-            '/      \/  \/  \/',
-            '\   _  (o   )o  )',
-            ' \ /c   \__/ --.',
-            " | \_   ,     -'",
-            " |_ |  '\_______)",
-            '   ||      _)',
-            '    |     |',
-            '    OOOOOOO',
-            '   /       \     ',
+            r'  ___/  \/  \___',
+            r' |              /',
+            r' |             /_',
+            r' /      \_| \_| /',
+            r'/      \/  \/  \/',
+            r'\   _  (o   )o  )',
+            r' \ /c   \__/ --.',
+            r" | \_   ,     -'",
+            r" |_ |  '\_______)",
+            r'   ||      _)',
+            r'    |     |',
+            r'    OOOOOOO',
+            r'   /       \     ',
         ]
         return lisa_ascii
