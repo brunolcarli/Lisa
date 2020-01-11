@@ -10,7 +10,7 @@ from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms
-from lisa_processing.util.nlp import get_word_polarity
+from lisa_processing.util.nlp import get_word_polarity, text_classifier
 
 
 class DependencyParseType(graphene.ObjectType):
@@ -252,6 +252,22 @@ class Query(graphene.ObjectType):
         """
         word_List = kwargs.get('word_list')
         return [WordPolarityType(word=word, polarity=get_word_polarity(word)) for word in word_List]
+
+    ##########################################################################
+    # text classifier
+    ##########################################################################
+    text_classifier = graphene.Float(
+        text=graphene.String(required=True, description='Text to classify.')
+    )
+    def resolve_text_classifier(self, info, **kwargs):
+        """
+        Classifica a polaridade do texto de acordo com o algoritmo léxico de
+        Taboada, retornado do processamento um númerod e ponto flutuante entre
+        -1 e 1 podendo representar a negatividade, neutralidade ou positividade
+        do texto processado.
+        """
+        text = kwargs.get('text')
+        return text_classifier(text)
 
     ##########################################################################
     # OVO DE PÁSCOA
