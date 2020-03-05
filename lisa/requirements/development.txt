@@ -2,3 +2,4 @@
 
 pylint==2.4.1
 bumpversion==0.5.3
+python-decouple==3.1
