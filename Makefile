@@ -1,3 +1,4 @@
+# Local commands
 run:
 	python manage.py runserver 0.0.0.0:2154 --settings=lisa.settings.development
 
@@ -11,3 +12,19 @@ install:
 	python -c "import nltk;nltk.download('stopwords')"
 	python -c "import nltk;nltk.download('averaged_perceptron_tagger')"
 	python -m spacy download pt
+
+
+# Repl.it Commands
+run_replit:
+	python3 manage.py runserver 0.0.0.0:2154 --settings=lisa.settings.replit
+
+migrate_replit:
+	python3 manage.py makemigrations --settings=lisa.settings.replit
+	python3 manage.py migrate --settings=lisa.settings.replit
+
+install_replit:
+	pip3 install -r lisa/requirements/development.txt
+	python3 -c "import nltk;nltk.download('punkt')"
+	python3 -c "import nltk;nltk.download('stopwords')"
+	python3 -c "import nltk;nltk.download('averaged_perceptron_tagger')"
+	python3 -m spacy download pt
