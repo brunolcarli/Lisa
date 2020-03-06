@@ -54,17 +54,41 @@ O serviço estará disponível em `localhost:2154/graphql`
 
 <hr />
 
-![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
-
 <table align="center"><tr><td align="center" width="9999">
 <img src="https://media.giphy.com/media/l2Jei7zzXNV8xCKzK/giphy.gif" align="center" width="300" alt="Project icon">
-
-
-Docker option is under development
 
 </td></tr>
 
 </table>
+
+![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
+
+Crie um arquivo `lisa.env` em  `lisa/environment/lisa.env` e adicone as variáveis de ambiente:
+
+Insira e preencha neste arquivo as seguintes variáveis de ambiente:
+
+```
+DJANGO_SECRET_KEY=<your_secret_key>
+DJANGO_SETTINGS_MODULE=lisa.settings.docker
+
+MYSQL_ROOT_PASSWORD=<your_database_root_password>
+MYSQL_USER=<your_database_user>
+MYSQL_DATABASE=<your_database_name>
+MYSQL_PASSWORD=<your_database_password>
+MYSQL_HOST=lisa_db
+```
+
+Instale o docker compose:
+
+```
+$ pip install docker-compose
+```
+
+Suba os containers com:
+
+```
+$ make container
+```
 
 <hr />
 
