@@ -16,6 +16,12 @@ COPY lisa/requirements/common.txt .
 COPY lisa/requirements/docker.txt .
 RUN pip install -r docker.txt
 
+
+RUN	python -c "import nltk;nltk.download('punkt')"
+RUN	python -c "import nltk;nltk.download('stopwords')"
+RUN	python -c "import nltk;nltk.download('averaged_perceptron_tagger')"
+RUN	python -m spacy download pt
+
 COPY . .
 
 ENV NAME lisa

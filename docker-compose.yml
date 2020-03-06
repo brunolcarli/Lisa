@@ -20,7 +20,7 @@ services:
       - .:/app
       - static_data:/app/static
     ports:
-      - "3122:3122"
+      - "2154:2154"
     depends_on:
       - lisa_db
 
