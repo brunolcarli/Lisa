@@ -5,6 +5,7 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
+import spacy
 import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
@@ -12,6 +13,8 @@ from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms
 from lisa_processing.util.nlp import get_word_polarity, text_classifier
 
+
+SPACY = spacy.load('pt')
 
 class DependencyParseType(graphene.ObjectType):
     """
@@ -148,7 +151,7 @@ class Query(graphene.ObjectType):
         # captura os possíveis filtros
         text = kwargs.get('text')
 
-        tokens = settings.SPACY(text)
+        tokens = SPACY(text)
         data = [token for token in tokens]
 
         return [token.lemma_ for token in data]
@@ -182,7 +185,7 @@ class Query(graphene.ObjectType):
             tokens = word_tokenize(text_input)
             return [word for word in tokens if word not in portuguese_stopwords]
 
-        doc = settings.SPACY(text_input)
+        doc = SPACY(text_input)
         return [word for word in doc if not word.is_stop]
 
     ##########################################################################
@@ -202,7 +205,7 @@ class Query(graphene.ObjectType):
         as palávras da sentença, seus dependentes e antecessores.
         """
         text = kwargs.get('text')
-        doc = settings.SPACY(text)
+        doc = SPACY(text)
         result = []
 
         for word in doc:
@@ -230,7 +233,7 @@ class Query(graphene.ObjectType):
         Processa a resolução de entidades nomeadas a partir de um texto.
         """
         text_input = kwargs.get('text')
-        doc = settings.SPACY(text_input)
+        doc = SPACY(text_input)
         return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
 
     ##########################################################################
