@@ -28,3 +28,9 @@ install_replit:
 	python3 -c "import nltk;nltk.download('stopwords')"
 	python3 -c "import nltk;nltk.download('averaged_perceptron_tagger')"
 	python3 -m spacy download pt
+
+
+# Docker
+container:
+	docker-compose build
+	docker-compose up

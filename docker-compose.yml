@@ -1,0 +1,28 @@
+  
+version: '3'
+
+services:
+
+  lisa_db:
+    image: mariadb:10.3
+    env_file: lisa/environment/lisa.env
+    ports:
+      - "3306:3306"
+
+  lisa:
+    build: .    
+    image: lisa:devel
+    restart: on-failure
+    container_name: lisa_container
+    command: gunicorn -w 3 lisa.wsgi:application -b :2154
+    env_file: lisa/environment/lisa.env
+    volumes:
+      - .:/app
+      - static_data:/app/static
+    ports:
+      - "2154:2154"
+    depends_on:
+      - lisa_db
+
+volumes:
+  static_data:

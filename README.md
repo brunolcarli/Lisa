@@ -11,7 +11,7 @@
 
 <div align="center">
 
->![Version badge](https://img.shields.io/badge/version-0.1.11-silver.svg)
+>![Version badge](https://img.shields.io/badge/version-0.1.12-silver.svg)
 ![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 
@@ -27,6 +27,9 @@ Demo:
 
 
 # Rodando
+
+![Linux Badge](https://img.shields.io/badge/OS-Linux-black.svg)
+![Apple badge](https://badgen.net/badge/OS/OSX/:color?icon=apple)
 
 Para rodar a plataforma, primeiramente é necessário inicializar um novo ambiente virtual (virtualenv) e instalar as depenências:
 
@@ -48,6 +51,47 @@ $ make run
 
 
 O serviço estará disponível em `localhost:2154/graphql`
+
+<hr />
+
+<table align="center"><tr><td align="center" width="9999">
+
+## Docker
+
+<img src="https://media.giphy.com/media/l2Jei7zzXNV8xCKzK/giphy.gif" align="center" width="300" alt="Project icon">
+
+</td></tr>
+
+</table>
+
+![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
+
+Crie um arquivo `lisa.env` em  `lisa/environment/lisa.env` e adicone as variáveis de ambiente:
+
+Insira e preencha neste arquivo as seguintes variáveis de ambiente:
+
+```
+DJANGO_SECRET_KEY=<your_secret_key>
+DJANGO_SETTINGS_MODULE=lisa.settings.docker
+
+MYSQL_ROOT_PASSWORD=<your_database_root_password>
+MYSQL_USER=<your_database_user>
+MYSQL_DATABASE=<your_database_name>
+MYSQL_PASSWORD=<your_database_password>
+MYSQL_HOST=lisa_db
+```
+
+Instale o docker compose:
+
+```
+$ pip install docker-compose
+```
+
+Suba os containers com:
+
+```
+$ make container
+```
 
 <hr />
 
