@@ -28,6 +28,9 @@ Demo:
 
 # Rodando
 
+![Linux Badge](https://img.shields.io/badge/OS-Linux-black.svg)
+![Apple badge](https://badgen.net/badge/OS/OSX/:color?icon=apple)
+
 Para rodar a plataforma, primeiramente é necessário inicializar um novo ambiente virtual (virtualenv) e instalar as depenências:
 
 ```
@@ -48,6 +51,20 @@ $ make run
 
 
 O serviço estará disponível em `localhost:2154/graphql`
+
+<hr />
+
+![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
+
+<table align="center"><tr><td align="center" width="9999">
+<img src="https://media.giphy.com/media/l2Jei7zzXNV8xCKzK/giphy.gif" align="center" width="300" alt="Project icon">
+
+
+Docker option is under development
+
+</td></tr>
+
+</table>
 
 <hr />
 
