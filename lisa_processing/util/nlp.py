@@ -32,8 +32,9 @@ def get_word_polarity(word_input):
             data[word] = polarity
 
     # verifica se a palavra existe no corpus lexico
-    if word_input.lower() in data.keys():
-        return int(data[word_input.lower()])
+    stemmed_word = stemming([word_input])[0]
+    if stemmed_word.lower() in data.keys():
+        return int(data[stemmed_word.lower()])
     else:
         return 0
 

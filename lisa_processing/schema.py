@@ -10,7 +10,7 @@ import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
-from lisa_processing.enums import Algorithms
+from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
 from lisa_processing.util.nlp import get_word_polarity, text_classifier
 
 
@@ -246,6 +246,10 @@ class Query(graphene.ObjectType):
             description='List of words to process',
             required=True
         ),
+        algorithm=graphene.Argument(
+            WordPolarityAlgorithms,
+            description='Algorythm to process the the text. Default=LEXICAL'
+        )
     )
     def resolve_word_polarity(self, info, **kwargs):
         """
@@ -253,14 +257,24 @@ class Query(graphene.ObjectType):
         O Processamento aceita uma lista de palávras, retornando desta forma,
         uma lista de objetos contendo a palávra processada e sua polaridade.
         """
-        word_List = kwargs.get('word_list')
-        return [WordPolarityType(word=word, polarity=get_word_polarity(word)) for word in word_List]
+        word_list = kwargs.get('word_list')
+        algorithm = kwargs.get('algorithm', 'lexical')
+
+        if algorithm == 'spacy':
+            doc = [SPACY(word) for word in word_list]
+            return [WordPolarityType(word=w.text, polarity=w.sentiment) for w in doc]
+
+        return [WordPolarityType(word=w, polarity=get_word_polarity(w)) for w in word_list]
 
     ##########################################################################
     # text classifier
     ##########################################################################
     text_classifier = graphene.Float(
-        text=graphene.String(required=True, description='Text to classify.')
+        text=graphene.String(required=True, description='Text to classify.'),
+        algorithm=graphene.Argument(
+            WordPolarityAlgorithms,
+            description='Defines the processing algorithm backend. Default=LEXICAL'
+        )
     )
     def resolve_text_classifier(self, info, **kwargs):
         """
@@ -270,6 +284,12 @@ class Query(graphene.ObjectType):
         do texto processado.
         """
         text = kwargs.get('text')
+        algorithm = kwargs.get('algorithm', 'lexical')
+
+        if algorithm == 'spacy':
+            doc = SPACY(text)
+            return doc.sentiment
+
         return text_classifier(text)
 
     ##########################################################################
