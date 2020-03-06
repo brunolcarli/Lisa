@@ -55,6 +55,9 @@ O serviço estará disponível em `localhost:2154/graphql`
 <hr />
 
 <table align="center"><tr><td align="center" width="9999">
+
+## Docker
+
 <img src="https://media.giphy.com/media/l2Jei7zzXNV8xCKzK/giphy.gif" align="center" width="300" alt="Project icon">
 
 </td></tr>
