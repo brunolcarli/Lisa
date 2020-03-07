@@ -3,7 +3,7 @@ from decouple import config
 from lisa.settings.common import *
 import dotenv
 
-
+DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
