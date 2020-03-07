@@ -5,6 +5,7 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
+import sys
 import spacy
 import graphene
 from django.conf import settings
@@ -14,7 +15,13 @@ from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
 from lisa_processing.util.nlp import get_word_polarity, text_classifier
 
 
-SPACY = spacy.load('pt')
+# Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+try:
+    SPACY = spacy.load('pt')
+except OSError:
+    sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+    SPACY = spacy.load('pt_core_news_sm')
+
 
 class DependencyParseType(graphene.ObjectType):
     """
