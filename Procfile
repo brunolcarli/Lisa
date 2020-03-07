@@ -1,0 +1,1 @@
+web: gunicorn lisa.wsgi --log-file -
