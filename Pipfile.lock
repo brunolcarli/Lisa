@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4e485b968a8b30ff73e1315f957693ce50508aa0832054bcf244af2791f0a412"
+            "sha256": "3c84f1cbe977ebc6c8bc896ba2627dc0bbcbf35ba07ffc7cc3af0651d09038db"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,9 +16,6 @@
         ]
     },
     "default": {
-        "3bfcd83": {
-            "file": "https://github.com/UniversalDependencies/UD_Portuguese-Bosque/archive/r2.5.tar.gz"
-        },
         "aniso8601": {
             "hashes": [
                 "sha256:513d2b6637b7853806ae79ffaca6f3e8754bdd547048f5ccc1420aec4b714f1e",

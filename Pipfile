@@ -23,7 +23,6 @@ psycopg2-binary = "==2.8.3"
 python-decouple = "==3.1"
 spacy = "==2.0.18"
 pt-core-news-sm = {file = "https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-2.2.5/pt_core_news_sm-2.2.5.tar.gz"}
-3bfcd83 = {file = "https://github.com/UniversalDependencies/UD_Portuguese-Bosque/archive/r2.5.tar.gz"}
 Django = "==2.2.10"
 PyJWT = "==1.7.1"
 
