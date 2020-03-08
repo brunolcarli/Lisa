@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4e9343fed2eb86fbd30a8924a8e540c259466c99b4e49a915a2e11826992bf18"
+            "sha256": "7d291763fec544194a2ee6fea7de18fb7b12d14cf560686f5f32b209e0f2daf7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -314,6 +314,9 @@
             ],
             "index": "pypi",
             "version": "==2.8.3"
+        },
+        "pt-core-news-sm": {
+            "file": "https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-2.2.5/pt_core_news_sm-2.2.5.tar.gz"
         },
         "pyjwt": {
             "hashes": [
