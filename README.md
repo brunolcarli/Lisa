@@ -6,18 +6,15 @@
 
 *Lexical Interpreter for Sentiment Analysis*
 
-![Version badge](https://img.shields.io/badge/version-0.1.13-silver.svg)
-
 </td></tr>
 
 </table>    
 
 <div align="center">
 
->
+> ![Version badge](https://img.shields.io/badge/version-0.1.13-silver.svg)
 ![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
-[![replit badge](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%20lisa%7B%0A%20%20lisa%0A%7D&operationName=lisa)
 [![Heroku Badge](https://img.shields.io/badge/%E2%86%91_staged_on-Heroku-7056bf.svg)](https://lisa-api-server.herokuapp.com/graphql/)
 
 </div>
