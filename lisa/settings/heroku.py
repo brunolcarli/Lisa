@@ -3,6 +3,12 @@ from decouple import config
 from lisa.settings.common import *
 import dotenv
 
+import nltk
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+
 DEBUG = False
 DATABASES = {
     'default': {
