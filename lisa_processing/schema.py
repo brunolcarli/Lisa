@@ -5,6 +5,7 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
+import sys
 import spacy
 import graphene
 from django.conf import settings
@@ -13,8 +14,6 @@ from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
 from lisa_processing.util.nlp import get_word_polarity, text_classifier
 
-
-SPACY = spacy.load('pt')
 
 class DependencyParseType(graphene.ObjectType):
     """
@@ -151,6 +150,14 @@ class Query(graphene.ObjectType):
         # captura os possíveis filtros
         text = kwargs.get('text')
 
+        # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+        try:
+            SPACY = spacy.load('pt')
+        except OSError:
+            sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+            SPACY = spacy.load('pt_core_news_sm')
+        else:
+            raise Exception('Failed loading SpaCy!')
         tokens = SPACY(text)
         data = [token for token in tokens]
 
@@ -185,6 +192,14 @@ class Query(graphene.ObjectType):
             tokens = word_tokenize(text_input)
             return [word for word in tokens if word not in portuguese_stopwords]
 
+        # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+        try:
+            SPACY = spacy.load('pt')
+        except OSError:
+            sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+            SPACY = spacy.load('pt_core_news_sm')
+        else:
+            raise Exception('Failed loading SpaCy!')
         doc = SPACY(text_input)
         return [word for word in doc if not word.is_stop]
 
@@ -205,6 +220,14 @@ class Query(graphene.ObjectType):
         as palávras da sentença, seus dependentes e antecessores.
         """
         text = kwargs.get('text')
+        # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+        try:
+            SPACY = spacy.load('pt')
+        except OSError:
+            sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+            SPACY = spacy.load('pt_core_news_sm')
+        else:
+            raise Exception('Failed loading SpaCy!')
         doc = SPACY(text)
         result = []
 
@@ -233,6 +256,14 @@ class Query(graphene.ObjectType):
         Processa a resolução de entidades nomeadas a partir de um texto.
         """
         text_input = kwargs.get('text')
+        # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+        try:
+            SPACY = spacy.load('pt')
+        except OSError:
+            sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+            SPACY = spacy.load('pt_core_news_sm')
+        else:
+            raise Exception('Failed loading SpaCy!')
         doc = SPACY(text_input)
         return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
 
@@ -261,6 +292,14 @@ class Query(graphene.ObjectType):
         algorithm = kwargs.get('algorithm', 'lexical')
 
         if algorithm == 'spacy':
+            # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+            try:
+                SPACY = spacy.load('pt')
+            except OSError:
+                sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+                SPACY = spacy.load('pt_core_news_sm')
+            else:
+                raise Exception('Failed loading SpaCy!')    
             doc = [SPACY(word) for word in word_list]
             return [WordPolarityType(word=w.text, polarity=w.sentiment) for w in doc]
 
@@ -287,6 +326,14 @@ class Query(graphene.ObjectType):
         algorithm = kwargs.get('algorithm', 'lexical')
 
         if algorithm == 'spacy':
+            # Tenta carregar pt por padrao, se nao der carrega o pt_core_news
+            try:
+                SPACY = spacy.load('pt')
+            except OSError:
+                sys.stdout.write('Failed loading spcy pt, trying to load core_news...\n')
+                SPACY = spacy.load('pt_core_news_sm')
+            else:
+                raise Exception('Failed loading SpaCy!')    
             doc = SPACY(text)
             return doc.sentiment
 

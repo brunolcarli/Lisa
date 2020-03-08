@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django-filter = "==2.0.0"
+django-graphql-jwt = "==0.1.5"
+graphene = "==2.1.8"
+graphene-django = "==2.2.0"
+graphql-relay = "==2.0.0"
+pytz = "==2019.3"
+nltk = "==3.4.5"
+dj-database-url = "==0.3.0"
+dj-static = "==0.0.6"
+static3 = "==0.6.1"
+whitenoise = "==3.3.1"
+gunicorn = "==19.7.1"
+python-dotenv = "==0.10.3"
+psycopg2-binary = "==2.8.3"
+python-decouple = "==3.1"
+spacy = "==2.0.18"
+pt-core-news-sm = {file = "https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-2.2.5/pt_core_news_sm-2.2.5.tar.gz"}
+Django = "==2.2.10"
+PyJWT = "==1.7.1"
+
+[requires]
+python_version = "3.6"

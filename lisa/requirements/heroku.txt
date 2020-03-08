@@ -1,0 +1,12 @@
+-r common.txt
+
+dj-database-url==0.3.0
+dj-static==0.0.6
+static3==0.6.1
+whitenoise==3.3.1
+gunicorn==19.7.1
+python-dotenv==0.10.3
+psycopg2-binary==2.8.3
+python-decouple==3.1
+spacy==2.0.18
+https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-2.2.5/pt_core_news_sm-2.2.5.tar.gz
