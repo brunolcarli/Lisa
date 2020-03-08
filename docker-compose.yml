@@ -6,8 +6,6 @@ services:
   lisa_db:
     image: mariadb:10.3
     env_file: lisa/environment/lisa.env
-    ports:
-      - "3306:3306"
 
   lisa:
     build: .    
