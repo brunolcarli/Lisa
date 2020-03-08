@@ -15,9 +15,6 @@
 ![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 
-Demo:
-> [![Run on Repl.it](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%20lisa%7B%0A%20%20lisa%0A%7D&operationName=lisa)
-
 
 </div>
 
