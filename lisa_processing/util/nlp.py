@@ -108,7 +108,7 @@ def text_classifier(text):
     
             sentence_emotions.append((sentence_emotion + polarity))
 
-    # A polaridade toral do texto é a média de emções nas sentenças
+    # A polaridade total do texto é a média de emoções nas sentenças
     text_emotion = sum(sentence_emotions) / len(sentence_emotions)
 
     return text_emotion * .1
@@ -140,7 +140,7 @@ def binary_wordmatch(input_text, word_list):
             single_match = []
 
         try:
-            binary_match =[re.fullmatch(f'{prev_word} {word}', target) for target in word_list]
+            binary_match = [re.fullmatch(f'{prev_word} {word}', target) for target in word_list]
         except:
             binary_match = []
 
@@ -192,8 +192,10 @@ def get_offense_level(text):
     de "palavras feias" contidas no texto.
     """
     count = 0
-    with open('corpora/hateset.txt', 'r') as f:
-        data = set([i.lower()[:-1] for i in f.readlines()])
+
+    text = stemming(basic_preprocess(text))
+    with open(settings.CORPORA_PATH['hateset']) as f:
+        data = set(stemming([i.lower()[:-1] for i in f.readlines()]))
 
     for word in text:
         if word in data:
@@ -204,10 +206,7 @@ def get_offense_level(text):
     except ZeroDivisionError:
         average = 0
     
-    if average >= .25:
-        response = True
-    else:
-        response = False
+    response = average >= .25 or False
 
     return (response, average)
 
