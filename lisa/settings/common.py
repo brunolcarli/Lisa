@@ -132,5 +132,6 @@ GRAPHENE = {
 }
 
 CORPORA_PATH = {
+    'hateset': 'corpora/lexical_data/hateset.txt',
     'sentilex_lem': 'corpora/lexical_data/SentiLex-lem-PT02.txt',
 }
