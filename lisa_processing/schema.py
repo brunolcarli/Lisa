@@ -11,7 +11,7 @@ from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
-from lisa_processing.util.nlp import get_word_polarity, text_classifier
+from lisa_processing.util.nlp import get_word_polarity, text_classifier, get_offense_level
 
 
 SPACY = spacy.load('pt')
@@ -40,6 +40,15 @@ class WordPolarityType(graphene.ObjectType):
     """
     word = graphene.String()
     polarity = graphene.Float()
+
+
+class TextOffenseType(graphene.ObjectType):
+    """
+    Padrão de resposta para requisições de TextOffense.
+    """
+    text = graphene.String(description='Processed text!')
+    average = graphene.Float(description='Avarage calc on based on bad words counting!')
+    result = graphene.Boolean(description='True if the sentence is offensive, False if not!')
 
 
 class Query(graphene.ObjectType):
@@ -293,7 +302,22 @@ class Query(graphene.ObjectType):
         return text_classifier(text)
 
     ##########################################################################
-    # OVO DE PÁSCOA
+    # Text Offense
+    ##########################################################################
+    text_offense_level = graphene.Field(
+        TextOffenseType,
+        text=graphene.String(
+            required=True,
+            description='Claissifies the text based on bad words included')
+    )
+
+    def resolve_text_offense_level(self, info, **kwargs):
+        text = kwargs.get('text')
+        result, average = get_offense_level(text)
+        return TextOffenseType(text=text, average=average, result=result)
+
+    ##########################################################################
+    # Versão da plataforma
     ##########################################################################
     lisa = graphene.List(graphene.String)
     def resolve_lisa(self, info, **kwargs):
