@@ -10,7 +10,7 @@ import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
-from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
+from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level)
 
@@ -365,6 +365,29 @@ class Query(graphene.ObjectType):
             )
 
         return response
+
+    ##########################################################################
+    # Help
+    ##########################################################################
+    help = graphene.List(
+        graphene.String,
+        language=graphene.Argument(
+            Language,
+            description='Help Text language. Default=Pt-Br!'
+        ),
+        description='Returns the repository docs link!'
+    )
+    def resolve_help(self, info, **kwargs):
+        language_options = {
+            'en': 'En: For more detailed information please visit the ' \
+                  'official docs page on GitHub repository!',
+            'pt-br': 'Pt-Br: Para informações mais detalhadas por favor ' \
+                     'consulte a documentação oficial no repositório do GitHub!'
+        }
+        message = language_options.get(kwargs.get('language', 'pt-br'))
+        wiki_link = 'https://github.com/brunolcarli/Lisa/wiki'
+
+        return [message, wiki_link]
 
     ##########################################################################
     # Versão da plataforma
