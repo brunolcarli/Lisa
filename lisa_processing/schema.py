@@ -11,7 +11,8 @@ from django.conf import settings
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms
-from lisa_processing.util.nlp import get_word_polarity, text_classifier, get_offense_level
+from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
+                                      get_offense_level, get_word_offense_level)
 
 
 SPACY = spacy.load('pt')
@@ -47,8 +48,26 @@ class TextOffenseType(graphene.ObjectType):
     Padrão de resposta para requisições de TextOffense.
     """
     text = graphene.String(description='Processed text!')
-    average = graphene.Float(description='Avarage calc on based on bad words counting!')
-    result = graphene.Boolean(description='True if the sentence is offensive, False if not!')
+    average = graphene.Float(
+        description='Avarage calc on based on bad words counting!'
+    )
+    result = graphene.Boolean(
+        description='True if the sentence is offensive, False if not!'
+    )
+
+
+class WordOffenseType(graphene.ObjectType):
+    """
+    Padrão de objeto contido na lista retornada como resposta na requisição de
+    processamento de wordOffenseLevel (Nível Ofensivo de palavras)
+    """
+    root = graphene.String(description='Stemmed root from the inputed term')
+    value = graphene.Int(
+        description='Integer that indicates if the term may be offensive! 1 for yes 0 for no.'
+    )
+    is_offensive = graphene.Boolean(
+        description='Suggests if the term is offensive'
+    )
 
 
 class Query(graphene.ObjectType):
@@ -308,13 +327,44 @@ class Query(graphene.ObjectType):
         TextOffenseType,
         text=graphene.String(
             required=True,
-            description='Claissifies the text based on bad words included')
+            description='Text string to be classified!'
+        ),
+        description='Classifies the text based on bad words included'
     )
 
     def resolve_text_offense_level(self, info, **kwargs):
         text = kwargs.get('text')
         result, average = get_offense_level(text)
         return TextOffenseType(text=text, average=average, result=result)
+
+    ##########################################################################
+    # Word Offense
+    ##########################################################################
+    word_offense_level = graphene.List(
+        WordOffenseType,
+        word_list=graphene.List(
+            graphene.String,
+            required=True,
+            description='List of words to be classified!',
+        ),
+        description='Classifies the terms as offensive or not offensive.'
+    )
+
+    def resolve_word_offense_level(self, info, **kwargs):
+        words = kwargs.get('word_list')
+        data = get_word_offense_level(words)
+
+        response = []
+        for result in data:
+            response.append(
+                WordOffenseType(
+                    root=result[0],
+                    value=result[1],
+                    is_offensive=bool(result[1])
+                )
+            )
+
+        return response
 
     ##########################################################################
     # Versão da plataforma
