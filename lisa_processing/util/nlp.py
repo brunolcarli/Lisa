@@ -186,6 +186,21 @@ def stemming(sentence):
     return [stemmer.stem(token) for token in sentence]
 
 
+def get_hateset():
+    """
+    Abre o corpus hateset.txt cujo possui amostras de termos ofensivos,
+    realiza o slicing das linhas do arquivo retornando somente o termo principal
+    para o stemmer, filtrando as duplicatas e retornando um conjunto (set)
+    contendo a raiz dos termos do corpus.
+
+    return : <set> |> <str> : Conjunto de termos stemizados.
+    """
+    with open(settings.CORPORA_PATH['hateset']) as f:
+        data = set(stemming([i.lower()[:-1] for i in f.readlines()]))
+
+    return data
+
+
 def get_offense_level(text):
     """
     Mede o nível de baixo calão na frase dada a quantidade
@@ -193,22 +208,51 @@ def get_offense_level(text):
     """
     count = 0
 
+    # pré-processa a entrada e retorna as amostras também pré-processadas
     text = stemming(basic_preprocess(text))
-    with open(settings.CORPORA_PATH['hateset']) as f:
-        data = set(stemming([i.lower()[:-1] for i in f.readlines()]))
+    data = get_hateset()
 
+    # Contabiliza as ocorrências
     for word in text:
         if word in data:
             count += 1
 
+    # Se a entrada conter somente stopwords, possivelmente o pre-processamento
+    # irá "esvaziar" a entrada, resultando em uma possível divisão por zero
     try:
         average = count / len(text)
     except ZeroDivisionError:
         average = 0
-    
+
+    # Define como sugestão de ofensa se a média for maior ou igual a 25%
     response = average >= .25 or False
 
     return (response, average)
+
+
+def get_word_offense_level(word_list):
+    """
+    Verifica se as palavras fornecidas são ofensivas baseadas no hateset.
+    Retorna uma lista de tuplas contendo:
+        - Palavra analisada;
+        - Inteiro representando se ofensivo (1) ou não ofensivo (0);
+        - Formato [(<str>, <int>), (<str>, <int>), ...]
+    param : word_list : <list> |> <str> : Lista de palavras;
+    return : <list> |> <tuple>
+    """
+    result = []
+
+    # stemiza a entrada e recupera as amostras também pré-processadas
+    tokens = stemming(remove_stopwords(remove_punctuations(word_list)))
+    data = get_hateset()
+
+    # TODO: Pensar em uma forma de retornar na tupla o termo completo e não a raio
+    for token in tokens:
+        if token in data:
+            result.append((token, 1))
+        else:
+            result.append((token, 0))
+    return result
 
 
 def basic_preprocess(text):
