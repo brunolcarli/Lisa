@@ -14,3 +14,12 @@ class WordPolarityAlgorithms(Enum):
     """
     SPACY = 'spacy'
     LEXICAL = 'lexical'
+
+
+class Language(Enum):
+    """
+    Define constantes para a linguagem utilizanda em determinados textos.
+    """
+    # Por enquanto Pt-Br e English (US)
+    PTBR = 'pt-br'
+    ENGLISH = 'en'
