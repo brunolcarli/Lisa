@@ -13,6 +13,7 @@ from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level)
+from lisa_processing.util.nlp import stemming as stem
 
 
 SPACY = spacy.load('pt')
@@ -67,6 +68,16 @@ class WordOffenseType(graphene.ObjectType):
     )
     is_offensive = graphene.Boolean(
         description='Suggests if the term is offensive'
+    )
+
+
+class StemmingType(graphene.ObjectType):
+    """
+    Define a estrutura de resposta da requisição de stemming
+    """
+    token = graphene.String(description='Original given token.')
+    root = graphene.String(
+        description='Stemmed root extracted from the original term.'
     )
 
 
@@ -365,6 +376,23 @@ class Query(graphene.ObjectType):
             )
 
         return response
+
+    ##########################################################################
+    # stemming
+    ##########################################################################
+    stemming = graphene.List(
+        StemmingType,
+        word_list=graphene.List(
+            graphene.String,
+            required=True,
+            description='List of terms to be stemmed!'
+        ),
+        description='Returns root of each listed word'
+    )
+    def resolve_stemming(self, info, **kwargs):
+        data = stem(kwargs.get('word_list'))
+        paired_data = list(zip(kwargs.get('word_list'), data))
+        return [StemmingType(token=pair[0], root=pair[1]) for pair in paired_data]
 
     ##########################################################################
     # Help
