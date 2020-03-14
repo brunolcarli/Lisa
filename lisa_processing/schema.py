@@ -81,6 +81,14 @@ class StemmingType(graphene.ObjectType):
     )
 
 
+class PartOfSpeechType(graphene.ObjectType):
+    """
+    Define a estrutura de resposta da requisição de partOfSpeech
+    """
+    token = graphene.String(description='Analyzed token.')
+    tag = graphene.String(description='Identified tag.')
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -132,9 +140,7 @@ class Query(graphene.ObjectType):
     # PART OF SPEECH
     ##########################################################################
     part_of_speech = graphene.List(
-        graphene.List(
-            graphene.String
-        ),
+        PartOfSpeechType,
         non_tokenized_text=graphene.String(
             description='Process part of speech with a non tokenized input.'
         ),
@@ -148,9 +154,8 @@ class Query(graphene.ObjectType):
         """
         Processa requisição de part of speech
         """
-
-        # não pode não passar nenhum filtro
         if not kwargs:
+            # não pode não passar nenhum filtro
             raise Exception('Please choose a filter input option!')
 
         # captura os possíveis filtros
@@ -159,13 +164,16 @@ class Query(graphene.ObjectType):
 
         # não pode passar os dois filtros ao mesmo tempo
         if tokenized and non_tokenized:
-            raise Exception('Please, input only one filter!')
+            raise Exception('Please, choose only one filter!')
 
         elif tokenized:
-            return pos_tag(tokenized)
+            # caso o filtro tenha sido uma lista de tokens
+            data = pos_tag(tokenized)
+            return [PartOfSpeechType(token=pair[0], tag=pair[1]) for pair in data]
 
-        else:
-            return pos_tag(word_tokenize(non_tokenized))
+        # caso o filtro tenha sido texto bruto
+        data = pos_tag(word_tokenize(non_tokenized))
+        return [PartOfSpeechType(token=pair[0], tag=pair[1]) for pair in data]
 
     ##########################################################################
     # LEMMING
