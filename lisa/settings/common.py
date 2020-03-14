@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-VERSION = '0.1.15'
+VERSION = '0.1.16'
 
 BANNER = f'''
 ====================
