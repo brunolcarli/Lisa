@@ -14,6 +14,7 @@ from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level)
 from lisa_processing.util.nlp import stemming as stem
+from lisa_processing.util.tools import get_pos_tag_description
 
 
 SPACY = spacy.load('pt')
@@ -87,6 +88,10 @@ class PartOfSpeechType(graphene.ObjectType):
     """
     token = graphene.String(description='Analyzed token.')
     tag = graphene.String(description='Identified tag.')
+    description = graphene.String(description='Explicit tag meaning.')
+
+    # def resolve_description(self, info, **kwargs):
+    #     self.description = get_pos_tag_description(self.tag)
 
 
 class Query(graphene.ObjectType):
@@ -152,8 +157,13 @@ class Query(graphene.ObjectType):
         Processa requisição de part of speech
         """
         data = SPACY(kwargs.get('text'))
-
-        return [PartOfSpeechType(token=token.text, tag=token.pos_) for token in data]
+        response = [
+            PartOfSpeechType(
+                token=token.text,
+                tag=token.pos_,
+                description=get_pos_tag_description(token.pos_)) for token in data
+        ]
+        return response
 
     ##########################################################################
     # LEMMING
