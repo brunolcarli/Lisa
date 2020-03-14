@@ -8,12 +8,13 @@ contact info: brunolcarli@gmail.com
 import spacy
 import graphene
 from django.conf import settings
-from nltk import sent_tokenize, word_tokenize, pos_tag
+from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level)
 from lisa_processing.util.nlp import stemming as stem
+from lisa_processing.util.tools import get_pos_tag_description
 
 
 SPACY = spacy.load('pt')
@@ -87,6 +88,10 @@ class PartOfSpeechType(graphene.ObjectType):
     """
     token = graphene.String(description='Analyzed token.')
     tag = graphene.String(description='Identified tag.')
+    description = graphene.String(description='Explicit tag meaning.')
+
+    # def resolve_description(self, info, **kwargs):
+    #     self.description = get_pos_tag_description(self.tag)
 
 
 class Query(graphene.ObjectType):
@@ -141,12 +146,9 @@ class Query(graphene.ObjectType):
     ##########################################################################
     part_of_speech = graphene.List(
         PartOfSpeechType,
-        non_tokenized_text=graphene.String(
+        text=graphene.String(
+            required=True,
             description='Process part of speech with a non tokenized input.'
-        ),
-        tokenized_text=graphene.List(
-            graphene.String,
-            description='Process part of speech with a tokenized input.'
         ),
         description='Process request for part of speech.'
     )
@@ -154,26 +156,14 @@ class Query(graphene.ObjectType):
         """
         Processa requisição de part of speech
         """
-        if not kwargs:
-            # não pode não passar nenhum filtro
-            raise Exception('Please choose a filter input option!')
-
-        # captura os possíveis filtros
-        tokenized = kwargs.get('tokenized_text')
-        non_tokenized = kwargs.get('non_tokenized_text')
-
-        # não pode passar os dois filtros ao mesmo tempo
-        if tokenized and non_tokenized:
-            raise Exception('Please, choose only one filter!')
-
-        elif tokenized:
-            # caso o filtro tenha sido uma lista de tokens
-            data = pos_tag(tokenized)
-            return [PartOfSpeechType(token=pair[0], tag=pair[1]) for pair in data]
-
-        # caso o filtro tenha sido texto bruto
-        data = pos_tag(word_tokenize(non_tokenized))
-        return [PartOfSpeechType(token=pair[0], tag=pair[1]) for pair in data]
+        data = SPACY(kwargs.get('text'))
+        response = [
+            PartOfSpeechType(
+                token=token.text,
+                tag=token.pos_,
+                description=get_pos_tag_description(token.pos_)) for token in data
+        ]
+        return response
 
     ##########################################################################
     # LEMMING
