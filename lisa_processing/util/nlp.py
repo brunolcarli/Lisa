@@ -113,6 +113,7 @@ def text_classifier(text):
 
     return text_emotion * .1
 
+
 def binary_wordmatch(input_text, word_list):
     """
     Percorre uma entrada de texto buscand identificar se uma palavra,
