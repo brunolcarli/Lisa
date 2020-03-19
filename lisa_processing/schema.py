@@ -465,6 +465,26 @@ class Query(graphene.ObjectType):
         return response
 
     ##########################################################################
+    # Similarity
+    ##########################################################################
+    similarity = graphene.Float(
+        token_a=graphene.String(
+            required=True,
+            description='First term'
+        ),
+        token_b=graphene.String(
+            required=True,
+            description='Second term'
+        ),
+        description='Compares the similarity between token A and token B.'
+    )
+    def resolve_similarity(self, info, **kwargs):
+        a = SPACY(kwargs.get('token_a'))
+        b = SPACY(kwargs.get('token_b'))
+
+        return a.similarity(b)
+
+    ##########################################################################
     # Help
     ##########################################################################
     help = graphene.List(
