@@ -37,7 +37,7 @@ TRAINING_DATA = [
     ('Lisa é uma garota muito inteligente', {'entities': [(0, 4, 'PER')]}),
     ('Kevin é um bom amigo', {'entities': [(0, 5, 'PER')]}),
     ('Bruno é nome do desenvolvedor da API', {'entities': [(0, 6, 'PER')]}),
-    ('No meio do ano irei para Aão Paulo fazer mais um curso', {'entities': [(25, 34, 'LOC')]}),
+    ('No meio do ano irei para São Paulo fazer mais um curso', {'entities': [(25, 34, 'LOC')]}),
     ('Em 04/09/1990 nasceu uma linda criança', {'entities': [(3, 13, 'DATE')]}),
     ('', {'entities': [()]}),
     ('', {'entities': [()]})
