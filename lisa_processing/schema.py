@@ -12,7 +12,8 @@ from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
-                                      get_offense_level, get_word_offense_level)
+                                      get_offense_level, get_word_offense_level,
+                                      is_stopword)
 from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
@@ -94,6 +95,30 @@ class PartOfSpeechType(graphene.ObjectType):
 
     # def resolve_description(self, info, **kwargs):
     #     self.description = get_pos_tag_description(self.tag)
+
+
+class InspectTokenType(graphene.ObjectType):
+    """
+    Define a estrutura da resposta a inspectTokens, apresentandos
+    dados de cada token fornecido.
+    """
+    token = graphene.String(description='Analyzed token.')
+    is_alpha = graphene.Boolean(description='Indicates if token is alpha numeric.')
+    is_ascii = graphene.Boolean(description='Indicates if token is ascii.')
+    is_currency = graphene.Boolean(description='Indicates if token is a currency value')
+    is_digit = graphene.Boolean(description='Indicates if token is a digit')
+    is_punct = graphene.Boolean(description='Indicates if token is punctuation')
+    is_space = graphene.Boolean(description='Indicates if token is whitespace')
+    is_stop = graphene.Boolean(description='Indicates if token is a stop word')
+    lemma = graphene.String(description='The token lemma representation')
+    pos_tag = graphene.String(description='The token part of speech tag representation')
+    vector = graphene.List(
+        graphene.Float,
+        description='Vector data of the token'
+    )
+    polarity = graphene.Int(description='The token extracted polarity')
+    is_offensive = graphene.Boolean(description='Token is a offensive term.')
+    root = graphene.String(description='Stemmed root extracted from token.')
 
 
 class Query(graphene.ObjectType):
@@ -282,7 +307,6 @@ class Query(graphene.ObjectType):
                 description=get_entity_description(ent.label_)
             ) for ent in doc.ents
         ]
-        # return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
 
     ##########################################################################
     # Word Polarity
@@ -402,6 +426,43 @@ class Query(graphene.ObjectType):
         data = stem(kwargs.get('word_list'))
         paired_data = list(zip(kwargs.get('word_list'), data))
         return [StemmingType(token=pair[0], root=pair[1]) for pair in paired_data]
+
+    ##########################################################################
+    # InspectTokens
+    ##########################################################################
+    inspect_tokens = graphene.List(
+        InspectTokenType,
+        text=graphene.String(
+            required=True,
+            description='Message to be parsed and inspected.',
+        ),
+        description='Returns full data of each token on the sentence.'
+    )
+    def resolve_inspect_tokens(self, info, **kwargs):
+        response = []
+        tokens = SPACY(kwargs.get('text'))
+
+        for token in tokens:
+            response.append(
+                InspectTokenType(
+                    token=token.text,
+                    is_alpha=token.is_alpha,
+                    is_ascii=token.is_ascii,
+                    is_currency=token.is_currency,
+                    is_digit=token.is_digit,
+                    is_punct=token.is_punct,
+                    is_space=token.is_space,
+                    is_stop=is_stopword(token.text),
+                    lemma=token.lemma_,
+                    pos_tag=token.pos_,
+                    vector=token.vector,
+                    polarity=get_word_polarity(token.text),
+                    is_offensive=get_offense_level(token.text)[0],
+                    root=stem([token.text])[0]
+                )
+            )
+
+        return response
 
     ##########################################################################
     # Help
