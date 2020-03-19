@@ -14,7 +14,8 @@ from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level)
 from lisa_processing.util.nlp import stemming as stem
-from lisa_processing.util.tools import get_pos_tag_description
+from lisa_processing.util.tools import (get_pos_tag_description,
+                                       get_entity_description)
 
 
 SPACY = spacy.load('pt')
@@ -34,6 +35,7 @@ class NamedEntityType(graphene.ObjectType):
     """
     term = graphene.String()
     entity = graphene.String()
+    description = graphene.String()
 
 
 class WordPolarityType(graphene.ObjectType):
@@ -263,6 +265,7 @@ class Query(graphene.ObjectType):
             description='Input text for named entity processing.',
             required=True
         ),
+        description='Extracts the entities from text.'
     )
 
     def resolve_named_entity(self, info, **kwargs):
@@ -271,7 +274,15 @@ class Query(graphene.ObjectType):
         """
         text_input = kwargs.get('text')
         doc = SPACY(text_input)
-        return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
+
+        return [
+            NamedEntityType(
+                term=ent.text,
+                entity=ent.label_,
+                description=get_entity_description(ent.label_)
+            ) for ent in doc.ents
+        ]
+        # return [NamedEntityType(*(i, i.label_)) for i in doc.ents]
 
     ##########################################################################
     # Word Polarity
