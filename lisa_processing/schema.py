@@ -139,6 +139,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process a sentence segmentation over a text input.'
     )
+
     def resolve_sentence_segmentation(self, info, **kwargs):
         """
         Processa a requisição de sentence segmentation conforme RF001.
@@ -159,6 +160,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process the word tokenizer request.'
     )
+
     def resolve_word_tokenize(self, info, **kwargs):
         """
         Processa requisição para atomização
@@ -179,6 +181,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process request for part of speech.'
     )
+
     def resolve_part_of_speech(self, info, **kwargs):
         """
         Processa requisição de part of speech
@@ -202,6 +205,7 @@ class Query(graphene.ObjectType):
         ),
         description='Lemmatize an inputed text or list of words.'
     )
+
     def resolve_lemmatize(self, info, **kwargs):
         """
         Retorna o processamento de lematização de uma entrada de texto ou
@@ -323,6 +327,7 @@ class Query(graphene.ObjectType):
             description='Algorythm to process the the text. Default=LEXICAL'
         )
     )
+
     def resolve_word_polarity(self, info, **kwargs):
         """
         Processa a resolução de polaridades de palavras.
@@ -348,6 +353,7 @@ class Query(graphene.ObjectType):
             description='Defines the processing algorithm backend. Default=LEXICAL'
         )
     )
+
     def resolve_text_classifier(self, info, **kwargs):
         """
         Classifica a polaridade do texto de acordo com o algoritmo léxico de
@@ -422,6 +428,7 @@ class Query(graphene.ObjectType):
         ),
         description='Returns root of each listed word'
     )
+
     def resolve_stemming(self, info, **kwargs):
         data = stem(kwargs.get('word_list'))
         paired_data = list(zip(kwargs.get('word_list'), data))
@@ -438,6 +445,7 @@ class Query(graphene.ObjectType):
         ),
         description='Returns full data of each token on the sentence.'
     )
+
     def resolve_inspect_tokens(self, info, **kwargs):
         response = []
         tokens = SPACY(kwargs.get('text'))
@@ -478,6 +486,7 @@ class Query(graphene.ObjectType):
         ),
         description='Compares the similarity between token A and token B.'
     )
+
     def resolve_similarity(self, info, **kwargs):
         a = SPACY(kwargs.get('token_a'))
         b = SPACY(kwargs.get('token_b'))
@@ -495,6 +504,7 @@ class Query(graphene.ObjectType):
         ),
         description='Returns the repository docs link!'
     )
+
     def resolve_help(self, info, **kwargs):
         language_options = {
             'en': 'En: For more detailed information please visit the ' \
@@ -511,6 +521,7 @@ class Query(graphene.ObjectType):
     # Versão da plataforma
     ##########################################################################
     lisa = graphene.List(graphene.String)
+
     def resolve_lisa(self, info, **kwargs):
         """
         Isso é um ovo de páscoa.
