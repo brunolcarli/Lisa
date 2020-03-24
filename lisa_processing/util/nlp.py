@@ -187,6 +187,17 @@ def remove_punctuations(sentence):
     return [token for token in sentence if token not in punctuation]
 
 
+def remove_puncts_from_string(text_sentence):
+    """
+    Remove as pontuações de uma string, retornando uma lista de tokens, exceto
+    as pontuações.
+
+    param : text_sentence : <str>
+    return : <list>
+    """
+    return ''.join(ch for ch in text_sentence if ch not in punctuation).split()
+
+
 def stemming(sentence):
     """
     Realiza o stemming nos tokens da sentença.
