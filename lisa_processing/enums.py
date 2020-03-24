@@ -23,3 +23,34 @@ class Language(Enum):
     # Por enquanto Pt-Br e English (US)
     PTBR = 'pt-br'
     ENGLISH = 'en'
+
+
+class PreProcess(Enum):
+    """
+    Constantes representando os algoritmos de pre-processamento.
+    """
+    SENTENCE_SEGMENTATION = 'sentece_segmentation'
+    TOKENIZE = 'tokenize'
+    REMOVE_STOPWORDS = 'stopwords'
+    REMOVE_PUNCTUATION = 'remove_puncts'
+
+
+class Processing(Enum):
+    """
+    Constantes representando os algoritmos de processamento.
+    """
+    TEXT_CLASSIFIER = 'text_classifier'
+    WORD_OFFENSE = 'word_offense'
+    TEXT_OFFENSE = 'text_offense'
+    WORD_POLARITY = 'word_pol'
+    NAMED_ENTITY = 'entities'
+    DEPENDECY_PARSE = 'dependencies'
+    PART_OF_SPEECH = 'pos'
+
+
+class Reducers(Enum):
+    """
+    Constantes representando os processadores de extração de lemmas e radicais.
+    """
+    STEMMING = 'stemmer'
+    LEMMING = 'lemmer'
