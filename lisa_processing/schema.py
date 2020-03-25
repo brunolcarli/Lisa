@@ -17,7 +17,8 @@ from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
 from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
-from lisa_processing.util.pipelines import execute_pre_processing
+from lisa_processing.util.pipelines import execute_pre_processing, execute_reducer
+from lisa_processing.resolvers import Resolver
 
 
 SPACY = spacy.load('pt')
@@ -214,6 +215,7 @@ class Query(graphene.ObjectType):
     lemmatize = graphene.List(
         graphene.String,
         text=graphene.String(
+            required=True,
             description='Process lemmatization with a non tokenized text input.'
         ),
         description='Lemmatize an inputed text or list of words.'
@@ -224,18 +226,7 @@ class Query(graphene.ObjectType):
         Retorna o processamento de lematização de uma entrada de texto ou
         lista de palavras.
         """
-
-        # Não pode não fornecer nenhum filtro
-        if not kwargs:
-            raise Exception('Please choose a filter input option!')
-
-        # captura os possíveis filtros
-        text = kwargs.get('text')
-
-        tokens = SPACY(text)
-        data = [token for token in tokens]
-
-        return [token.lemma_ for token in data]
+        return Resolver.resolve_lemming(kwargs.get('text'))
 
     ##########################################################################
     # STOP WORDS
@@ -434,17 +425,17 @@ class Query(graphene.ObjectType):
     ##########################################################################
     stemming = graphene.List(
         StemmingType,
-        word_list=graphene.List(
-            graphene.String,
+        text=graphene.String(
             required=True,
-            description='List of terms to be stemmed!'
+            description='Text to be stemmed!'
         ),
         description='Returns root of each listed word'
     )
 
     def resolve_stemming(self, info, **kwargs):
-        data = stem(kwargs.get('word_list'))
-        paired_data = list(zip(kwargs.get('word_list'), data))
+        data = Resolver.resolve_stemming(kwargs.get('text'))
+
+        paired_data = list(zip(kwargs.get('text').split(), data))
         return [StemmingType(token=pair[0], root=pair[1]) for pair in paired_data]
 
     ##########################################################################
@@ -519,22 +510,32 @@ class Query(graphene.ObjectType):
             enums.PreProcess,
             description='Pre-process oeprations in the given ordering'
         ),
+        reducer=graphene.Argument(
+            enums.Reducers,
+            description='Root and lemma reducers.'
+        ),
         description='Returns the result of a custom pipeline!'
     )
 
     def resolve_custom_pipeline(self, info, **kwargs):
         text = kwargs.get('text')
-        out = text
+        output = text
+
         pre_processing = kwargs.get('pre_process')
+        reducer = kwargs.get('reducer')
 
         if pre_processing:
-            out = execute_pre_processing(out, pre_processing)
+            output = execute_pre_processing(output, pre_processing)
+
+        if reducer:
+            output = execute_reducer(output, reducer)
 
         return CustomPipeline(
             text=text,
-            text_output=out,
-            list_output=out.split(),
-            chosen_pre_processment=pre_processing
+            text_output=output,
+            list_output=output.split(),
+            chosen_pre_processment=pre_processing,
+            chosen_reducer=reducer
         )
 
     ##########################################################################
