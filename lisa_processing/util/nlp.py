@@ -177,6 +177,18 @@ def is_stopword(token):
     return token in portuguese_stopwords
 
 
+def remove_stopwords_from_str(text):
+    """
+    Remove os stopwords do texto.
+
+    param : text : <str>
+    return <list>
+    """
+    portuguese_stopwords = set(stopwords.words('portuguese'))
+    return [word for word in text.split() if word not in portuguese_stopwords]
+
+
+
 def remove_punctuations(sentence):
     """
     Remove pontuações de uma sentença.
