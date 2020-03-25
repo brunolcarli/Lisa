@@ -10,13 +10,14 @@ import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
-from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
+from lisa_processing import enums
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level,
                                       is_stopword)
 from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
+from lisa_processing.util.pipelines import execute_pre_processing
 
 
 SPACY = spacy.load('pt')
@@ -119,6 +120,18 @@ class InspectTokenType(graphene.ObjectType):
     polarity = graphene.Int(description='The token extracted polarity')
     is_offensive = graphene.Boolean(description='Token is a offensive term.')
     root = graphene.String(description='Stemmed root extracted from token.')
+
+
+class CustomPipeline(graphene.ObjectType):
+    """
+    Define a estrutura de resposta para consultas de pipeline customizado
+    """
+    text = graphene.String(description='Processed text.')
+    chosen_pre_processment = graphene.List(enums.PreProcess)
+    chosen_reducer = enums.Reducers()
+    chosen_processment = enums.Processing()
+    text_output = graphene.String()
+    list_output = graphene.List(graphene.String)
 
 
 class Query(graphene.ObjectType):
@@ -234,7 +247,7 @@ class Query(graphene.ObjectType):
             description='Input text for process the stop words removal.'
         ),
         algorithm=graphene.Argument(
-            Algorithms,
+            enums.Algorithms,
             description='Defines an processing algorithm. Default NLTK'
         ),
         description='Remove stop words from inputed text.'
@@ -323,7 +336,7 @@ class Query(graphene.ObjectType):
             required=True
         ),
         algorithm=graphene.Argument(
-            WordPolarityAlgorithms,
+            enums.WordPolarityAlgorithms,
             description='Algorythm to process the the text. Default=LEXICAL'
         )
     )
@@ -349,7 +362,7 @@ class Query(graphene.ObjectType):
     text_classifier = graphene.Float(
         text=graphene.String(required=True, description='Text to classify.'),
         algorithm=graphene.Argument(
-            WordPolarityAlgorithms,
+            enums.WordPolarityAlgorithms,
             description='Defines the processing algorithm backend. Default=LEXICAL'
         )
     )
@@ -494,12 +507,43 @@ class Query(graphene.ObjectType):
         return a.similarity(b)
 
     ##########################################################################
+    # Custom pipeline
+    ##########################################################################
+    custom_pipeline = graphene.Field(
+        CustomPipeline,
+        text=graphene.String(
+            required=True,
+            description='Text input to be processed!'
+        ),
+        pre_process=graphene.List(
+            enums.PreProcess,
+            description='Pre-process oeprations in the given ordering'
+        ),
+        description='Returns the result of a custom pipeline!'
+    )
+
+    def resolve_custom_pipeline(self, info, **kwargs):
+        text = kwargs.get('text')
+        out = text
+        pre_processing = kwargs.get('pre_process')
+
+        if pre_processing:
+            out = execute_pre_processing(out, pre_processing)
+
+        return CustomPipeline(
+            text=text,
+            text_output=out,
+            list_output=out.split(),
+            chosen_pre_processment=pre_processing
+        )
+
+    ##########################################################################
     # Help
     ##########################################################################
     help = graphene.List(
         graphene.String,
         language=graphene.Argument(
-            Language,
+            enums.Language,
             description='Help Text language. Default=Pt-Br!'
         ),
         description='Returns the repository docs link!'
