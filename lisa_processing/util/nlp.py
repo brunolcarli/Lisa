@@ -2,7 +2,6 @@
 Módulo para funcionalidades relacionadas ao Processamento de Linguagem
 Natural.
 """
-
 import re
 from random import choice
 from string import punctuation
@@ -35,8 +34,8 @@ def get_word_polarity(word_input):
     stemmed_word = stemming([word_input])[0]
     if stemmed_word.lower() in data.keys():
         return int(data[stemmed_word.lower()])
-    else:
-        return 0
+
+    return 0
 
 
 def text_classifier(text):
@@ -56,10 +55,10 @@ def text_classifier(text):
         'argueiro', 'bobagem', 'futilidade', 'fútil'
     ])
     intensifiers = stemming([
-            'mais', 'muito', 'demais', 'completamente', 'absolutamente',
-            'totalmente', 'definitivamente', 'extremamente',
-            'frequentemente', 'bastante', 'abundante', 'abundância',
-            'enxurrada', 'exurbitância', 'fartura'
+        'mais', 'muito', 'demais', 'completamente', 'absolutamente',
+        'totalmente', 'definitivamente', 'extremamente',
+        'frequentemente', 'bastante', 'abundante', 'abundância',
+        'enxurrada', 'exurbitância', 'fartura'
     ])
     reduction_words = stemming([
         'pouco', 'quase', 'menos', 'apenas', 'anormal', 'anômalo', 'banal',
@@ -109,9 +108,9 @@ def text_classifier(text):
             sentence_emotions.append((sentence_emotion + polarity))
 
     # A polaridade total do texto é a média de emoções nas sentenças
-    text_emotion = sum(sentence_emotions) / len(sentence_emotions)
+    text_emotion = (sum(sentence_emotions) / len(sentence_emotions)) * 100
 
-    return text_emotion * .1
+    return text_emotion * .01
 
 
 def binary_wordmatch(input_text, word_list):
@@ -188,7 +187,6 @@ def remove_stopwords_from_str(text):
     return [word for word in text.split() if word not in portuguese_stopwords]
 
 
-
 def remove_punctuations(sentence):
     """
     Remove pontuações de uma sentença.
@@ -260,7 +258,7 @@ def get_offense_level(text):
         average = 0
 
     # Define como sugestão de ofensa se a média for maior ou igual a 25%
-    response = average >= .25 or False
+    response = average >= .25
 
     return (response, average)
 
@@ -281,7 +279,7 @@ def get_word_offense_level(word_list):
     tokens = stemming(remove_stopwords(remove_punctuations(word_list)))
     data = get_hateset()
 
-    # TODO: Pensar em uma forma de retornar na tupla o termo completo e não a raio
+    # TODO: Pensar em uma forma de retornar na tupla o termo completo e não a raiz
     for token in tokens:
         if token in data:
             result.append((token, 1))
