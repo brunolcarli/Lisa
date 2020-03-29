@@ -39,7 +39,7 @@ class Processing(Enum):
     """
     Constantes representando os algoritmos de processamento.
     """
-    TEXT_CLASSIFIER = 'text_classifier'
+    LEXICAL_TEXT_CLASSIFIER = 'lexical_text_classifier'
     WORD_OFFENSE = 'word_offense'
     TEXT_OFFENSE = 'text_offense'
     WORD_POLARITY = 'word_pol'
