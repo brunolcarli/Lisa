@@ -1935,6 +1935,7 @@ delgado.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=MAN
 delicadeza.PoS=N;TG=HUM:N0;POL:N0=1;ANOT=MAN
 delicado.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
 delicioso.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
+deliciosa.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
 delinquência.PoS=N;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 delinquente.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 delirar.PoS=V;TG=HUM:N0;POL:N0=-1;ANOT=MAN
@@ -3736,6 +3737,9 @@ honrar os seus compromissos.PoS=IDIOM;TG=HUM:N0;POL:N0=1;ANOT=MAN
 honrar.PoS=V;TG=HUM:N0:N1;POL:N0=1;POL:N1=0;ANOT=MAN
 honroso.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
 horrendo.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+horroroso.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+horrível.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+horríveis.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 horribilidade.PoS=N;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 hórrido.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 horrífico.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
@@ -5182,7 +5186,8 @@ objetividade.PoS=N;TG=HUM:N0;POL:N0=1;ANOT=MAN
 objetivo.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN;REV=Amb
 oblíquo.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 obreiro.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=JALC
-obrigado.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=JALC
+obrigado.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=JALC
+obrigada.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=JALC
 obscenidade.PoS=N;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 obsceno.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 obscurecer.PoS=V;TG=HUM:N0:N1;POL:N0=-1;POL:N1=0;ANOT=MAN
@@ -5290,6 +5295,8 @@ ousado.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=MAN
 ouvido.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=JALC
 ouvir das boas.PoS=IDIOM;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 ouvir poucas mas boas.PoS=IDIOM;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+odeio.PoS=Verb;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+odiar.PoS=Verb;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 pacato.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
 pachorrento.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=MAN
 paciente.PoS=Adj;TG=HUM:N0;POL:N0=1;ANOT=MAN
