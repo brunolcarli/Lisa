@@ -17,8 +17,10 @@ from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
 from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
-from lisa_processing.util.pipelines import execute_pre_processing, execute_reducer
+from lisa_processing.util.pipelines import (execute_pre_processing, execute_reducer,
+                                            execute_processing)
 from lisa_processing.resolvers import Resolver
+from lisa_processing.util.types import DynamicScalar
 
 
 SPACY = spacy.load('pt')
@@ -131,8 +133,7 @@ class CustomPipeline(graphene.ObjectType):
     chosen_pre_processment = graphene.List(enums.PreProcess)
     chosen_reducer = enums.Reducers()
     chosen_processment = enums.Processing()
-    text_output = graphene.String()
-    list_output = graphene.List(graphene.String)
+    output = DynamicScalar()
 
 
 class Query(graphene.ObjectType):
@@ -276,18 +277,7 @@ class Query(graphene.ObjectType):
         Processa o parsing de dependências e retorna uma lista contendo
         as palávras da sentença, seus dependentes e antecessores.
         """
-        text = kwargs.get('text')
-        doc = SPACY(text)
-        result = []
-
-        for word in doc:
-            result.append({
-                'element': word,
-                'children': list(word.children),
-                'ancestors': list(word.ancestors)
-            })
-
-        return result
+        return Resolver.resolve_dependency_parse(kwargs.get('text'))
 
     ##########################################################################
     # NAMED ENTITY
@@ -361,7 +351,7 @@ class Query(graphene.ObjectType):
     def resolve_text_classifier(self, info, **kwargs):
         """
         Classifica a polaridade do texto de acordo com o algoritmo léxico de
-        Taboada, retornado do processamento um númerod e ponto flutuante entre
+        Taboada, retornado do processamento um número de ponto flutuante entre
         -1 e 1 podendo representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
@@ -514,6 +504,10 @@ class Query(graphene.ObjectType):
             enums.Reducers,
             description='Root and lemma reducers.'
         ),
+        processor=graphene.Argument(
+            enums.Processing,
+            description='Processing operations over the pipelined data.'
+        ),
         description='Returns the result of a custom pipeline!'
     )
 
@@ -523,6 +517,7 @@ class Query(graphene.ObjectType):
 
         pre_processing = kwargs.get('pre_process')
         reducer = kwargs.get('reducer')
+        processing = kwargs.get('processor')
 
         if pre_processing:
             output = execute_pre_processing(output, pre_processing)
@@ -530,12 +525,15 @@ class Query(graphene.ObjectType):
         if reducer:
             output = execute_reducer(output, reducer)
 
+        if processing:
+            output = execute_processing(output, processing)
+
         return CustomPipeline(
             text=text,
-            text_output=output,
-            list_output=output.split(),
             chosen_pre_processment=pre_processing,
-            chosen_reducer=reducer
+            chosen_reducer=reducer,
+            chosen_processment=processing,
+            output=output
         )
 
     ##########################################################################
