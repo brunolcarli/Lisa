@@ -3,6 +3,7 @@ Resolução dos algoritmos chamados nas queries.
 """
 import itertools
 import spacy
+from difflib import get_close_matches as closest_token
 from nltk import sent_tokenize, word_tokenize
 from lisa_processing.util.nlp import (stemming, text_classifier,
                                       get_word_offense_level, remove_stopwords,
@@ -176,21 +177,35 @@ class Resolver:
 
         return execute.get(str(type(input_data)))(input_data)
 
-    @staticmethod  # TODO WIP
-    def resolve_word_offense(text):
+    @staticmethod
+    def resolve_word_offense(input_data):
         """
         Resolve o processamento de identificação de palávras ofensivas.
 
-        param : text : <str>
-        return : <dict>
+        param : input_data : <str> or <list>
+        return : <list> : Lista de <dict>
         """
-        tokens = text.split()
+        normalizer = Normalizer()
+        resolve_from_list = lambda text_list: Resolver.resolve_tokenize(
+            normalizer.list_to_string(text_list)
+        )
+        resolve_from_str = lambda text: Resolver.resolve_tokenize(text)
+        execute = {
+            "<class 'str'>": resolve_from_str,
+            "<class 'list'>": resolve_from_list
+        }
+        tokens = execute.get(str(type(input_data)))(input_data)
         pairs = get_word_offense_level(tokens)
 
         output = []
         for pair in pairs:
+            # o processamento retorna o radical, ams queremos ot ermo completo
+            token = closest_token(pair[0], tokens)
+
+            # se não houver use o própprio radical
+            full_token = token or pair
             output.append({
-                'token': tokens[pairs.index(pair)],
+                'token': full_token[0],
                 'is_offensive': bool(pair[1])
             })
 
