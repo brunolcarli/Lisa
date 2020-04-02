@@ -318,3 +318,97 @@ class ResolverTests(TestCase):
         self.assertEqual(output_2, 0)
         self.assertTrue(isinstance(output_1, float))
         self.assertTrue(isinstance(output_2, float))
+
+    def test_resolve_offensive_words_from_string(self):
+        """
+        Verifica que o resolver de word_offense classifica corretamente palavras
+        ofensivas contidas em uma string.
+        """
+        text = 'otário babaca estúpido'
+        output = self.resolver.resolve_word_offense(text)
+
+        self.assertEqual(output[0]['token'], 'otário')
+        self.assertEqual(output[0]['is_offensive'], True)
+        self.assertEqual(output[1]['token'], 'babaca')
+        self.assertEqual(output[1]['is_offensive'], True)
+        self.assertEqual(output[2]['token'], 'estúpido')
+        self.assertEqual(output[2]['is_offensive'], True)
+
+    def test_resolve_offensive_words_from_list(self):
+        """
+        Verifica que o resolver de word_offense classifica corretamente como
+        ofensivas, palavras contidas em uma lista de palávras ou lista de
+        sentenças.
+        """
+        token_list = ['corno', 'ridículo', 'escroto']
+        text_list = ['feio porra cacete', 'ladrão vagabundo']
+
+        token_output = self.resolver.resolve_word_offense(token_list)
+        text_output = self.resolver.resolve_word_offense(text_list)
+
+        # confere a saída do processamento de lista de tokens
+        self.assertEqual(token_output[0]['token'], 'corno')
+        self.assertEqual(token_output[0]['is_offensive'], True)
+        self.assertEqual(token_output[1]['token'], 'ridículo')
+        self.assertEqual(token_output[1]['is_offensive'], True)
+        self.assertEqual(token_output[2]['token'], 'escroto')
+        self.assertEqual(token_output[2]['is_offensive'], True)
+
+        # confere a saída do processamento de lista de sentenças
+        self.assertEqual(text_output[0]['token'], 'feio')
+        self.assertEqual(text_output[0]['is_offensive'], True)
+        self.assertEqual(text_output[1]['token'], 'porra')
+        self.assertEqual(text_output[1]['is_offensive'], True)
+        self.assertEqual(text_output[2]['token'], 'cacete')
+        self.assertEqual(text_output[2]['is_offensive'], True)
+        self.assertEqual(text_output[3]['token'], 'ladrão')
+        self.assertEqual(text_output[3]['is_offensive'], True)
+        self.assertEqual(text_output[4]['token'], 'vagabundo')
+        self.assertEqual(text_output[4]['is_offensive'], True)
+
+    def test_not_resolve_offensive_words_from_string(self):
+        """
+        Verifica que o resolver de word_offense classifica corretamente palavras
+        não ofensivas contidas em uma string.
+        """
+        text = 'bonito borboleta macarrão'
+        output = self.resolver.resolve_word_offense(text)
+
+        self.assertEqual(output[0]['token'], 'bonito')
+        self.assertEqual(output[0]['is_offensive'], False)
+        self.assertEqual(output[1]['token'], 'borboleta')
+        self.assertEqual(output[1]['is_offensive'], False)
+        self.assertEqual(output[2]['token'], 'macarrão')
+        self.assertEqual(output[2]['is_offensive'], False)
+
+    def test_resolve_not_offensive_words_from_list(self):
+        """
+        Verifica que o resolver de word_offense classifica corretamente como
+        não ofensivas, palavras contidas em uma lista de palávras ou lista de
+        sentenças.
+        """
+        token_list = ['fofo', 'pastel', 'futebol']
+        text_list = ['feira fruta doce', 'dama formosa']
+
+        token_output = self.resolver.resolve_word_offense(token_list)
+        text_output = self.resolver.resolve_word_offense(text_list)
+
+        # confere a saída do processamento de lista de tokens
+        self.assertEqual(token_output[0]['token'], 'fofo')
+        self.assertEqual(token_output[0]['is_offensive'], False)
+        self.assertEqual(token_output[1]['token'], 'pastel')
+        self.assertEqual(token_output[1]['is_offensive'], False)
+        self.assertEqual(token_output[2]['token'], 'futebol')
+        self.assertEqual(token_output[2]['is_offensive'], False)
+
+        # confere a saída do processamento de lista de sentenças
+        self.assertEqual(text_output[0]['token'], 'feira')
+        self.assertEqual(text_output[0]['is_offensive'], False)
+        self.assertEqual(text_output[1]['token'], 'fruta')
+        self.assertEqual(text_output[1]['is_offensive'], False)
+        self.assertEqual(text_output[2]['token'], 'doce')
+        self.assertEqual(text_output[2]['is_offensive'], False)
+        self.assertEqual(text_output[3]['token'], 'dama')
+        self.assertEqual(text_output[3]['is_offensive'], False)
+        self.assertEqual(text_output[4]['token'], 'formosa')
+        self.assertEqual(text_output[4]['is_offensive'], False)
