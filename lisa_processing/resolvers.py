@@ -7,7 +7,7 @@ from difflib import get_close_matches as closest_token
 from nltk import sent_tokenize, word_tokenize
 from lisa_processing.util.nlp import (stemming, text_classifier,
                                       get_word_offense_level, remove_stopwords,
-                                      remove_punctuations)
+                                      remove_punctuations, get_offense_level)
 from lisa_processing.util.normalizer import Normalizer
 
 SPACY = spacy.load('pt')
@@ -210,3 +210,25 @@ class Resolver:
             })
 
         return output
+
+    @staticmethod
+    def resolve_text_offense(input_data):
+        """
+        Resolve o processamento de classificação de um texto como ofensivo.
+
+        param : input_data : <str> ou <list>
+        return <dict>
+        """
+        normalizer = Normalizer()
+        resolve_from_list = lambda token_list: get_offense_level(
+            normalizer.list_to_string(token_list)
+        )
+
+        execute = {
+            list: resolve_from_list,
+            str: get_offense_level
+        }
+
+        is_offensive, average = execute.get(type(input_data))(input_data)
+
+        return {'is_offensive': is_offensive, 'average': average}
