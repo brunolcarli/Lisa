@@ -412,3 +412,55 @@ class ResolverTests(TestCase):
         self.assertEqual(text_output[3]['is_offensive'], False)
         self.assertEqual(text_output[4]['token'], 'formosa')
         self.assertEqual(text_output[4]['is_offensive'], False)
+
+    def test_resolve_offensive_text_from_str(self):
+        """
+        Verifica que o resolver de textos ofensivos classifica corretamente como
+        ofensivo um texto inputado em forma de string.
+        """
+        text = 'você fez isso de uma forma burra!'
+        output = self.resolver.resolve_text_offense(text)
+
+        self.assertEqual(output['is_offensive'], True)
+        self.assertTrue(output['average'] >= 0.25)
+
+    def test_resolve_offensive_text_from_list(self):
+        """
+        Verifica que o resolver de textos ofensivos classifica corretamente como
+        ofensivo um mensagens inputadas em forma de lista.
+        """
+        text_list = [
+            'Que peido podre, puta que pariu.',
+            'Cacete mas que cheiro de merda'
+        ]
+
+        output = self.resolver.resolve_text_offense(text_list)
+
+        self.assertEqual(output['is_offensive'], True)
+        self.assertTrue(output['average'] >= 0.25)
+
+    def test_resolve_not_offensive_text_from_string(self):
+        """
+        Verifica que o resolver que identifica o texto como ofensivo classifica
+        corretamente como não ofensivo um texto não ofensivo inputado em uma
+        mensagem do tipo string.
+        """
+        text = 'Seu cabelo é tão liso e brilhoso, adorei, é muito bonito.'
+        output = self.resolver.resolve_text_offense(text)
+
+        self.assertEqual(output['is_offensive'], False)
+        self.assertTrue(output['average'] < 0.25)
+
+    def test_resolve_not_offensive_text_from_list(self):
+        """
+        Verifica que o resolver que identifica o texto como ofensivo classifica
+        corretamente como não ofensivo as sentenças contidas em uma lista.
+        """
+        text_list = [
+            'A noiva estava linda no vestido branco de renda.',
+            'Imagino se meu casamento será tão perfeito como este...'
+        ]
+        output = self.resolver.resolve_text_offense(text_list)
+
+        self.assertEqual(output['is_offensive'], False)
+        self.assertTrue(output['average'] < 0.25)
