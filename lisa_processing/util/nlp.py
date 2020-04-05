@@ -11,16 +11,15 @@ from nltk.stem import SnowballStemmer
 from django.conf import settings
 
 
-def get_word_polarity(word_input):
+def get_pols_from_corpus():
     """
-    Retorna a polaridade de uma palavra
+    Abre o corpus léxico que contém a identificação
+    da polaridade dos termos, retornando um dicionário
+    contendo o termo stemmizado como chave e sua polaridade como valor.
 
-    param : word_input : <str>
-    return : <int>
+    return : <dict>
     """
-    # Monta o dicionario de dados a paritr do córpus léxico
     data = {}
-    # TODO: testar isso
     with open(settings.CORPORA_PATH['sentilex_lem'], 'r') as f:
         for row in f.readlines():
             splitter = row.find('.')
@@ -30,12 +29,47 @@ def get_word_polarity(word_input):
             polarity = (row[pol_loc+7:pol_loc+9]).replace(';','')
             data[word] = polarity
 
+    return data
+
+
+def get_word_polarity(word_input):
+    """
+    Retorna a polaridade de uma palavra
+
+    param : word_input : <str>
+    return : <int>
+    """
+    data = get_pols_from_corpus()
+
     # verifica se a palavra existe no corpus lexico
     stemmed_word = stemming([word_input])[0]
     if stemmed_word.lower() in data.keys():
         return int(data[stemmed_word.lower()])
 
     return 0
+
+
+def get_tokens_pol(token_list):
+    """
+    Identifica a polaridade de cada token contido na entrada.
+    Retorna uma lista de dicionários contendo o token e sua polaridade.
+
+    param : token_list : <list> : lista de tokens (str)
+    return : <list> : Lista de <dict>
+    """
+    data = get_pols_from_corpus()
+    output = []
+
+    stemmed_tokens = stemming(token_list)
+    for token in stemmed_tokens:
+        # recupera o token original não stemizado através do indice do token
+        original_token = token_list[stemmed_tokens.index(token)]
+
+        # se o token não estiver nos dados obtidos do corpus considerar neutro
+        polarity = data.get(token, 0)
+        output.append({'token': original_token, 'polarity': int(polarity)})
+
+    return output
 
 
 def text_classifier(text):
@@ -208,15 +242,15 @@ def remove_puncts_from_string(text_sentence):
     return ''.join(ch for ch in text_sentence if ch not in punctuation).split()
 
 
-def stemming(sentence):
+def stemming(token_list):
     """
-    Realiza o stemming nos tokens da sentença.
+    Realiza o stemming nos tokens fornecidos.
 
-    param : sentecen : <list>
+    param : token_list : <list>
     return <list>
     """
     stemmer = SnowballStemmer('portuguese')
-    return [stemmer.stem(token) for token in sentence]
+    return [stemmer.stem(token) for token in token_list]
 
 
 def get_hateset():
