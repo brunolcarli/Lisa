@@ -10,7 +10,8 @@ from lisa_processing.util.nlp import (stemming, text_classifier,
                                       remove_punctuations, get_offense_level,
                                       get_tokens_pol)
 from lisa_processing.util.normalizer import Normalizer
-from lisa_processing.util.tools import get_entity_description
+from lisa_processing.util.tools import (get_entity_description,
+                                        get_pos_tag_description)
 
 
 SPACY = spacy.load('pt')
@@ -279,7 +280,7 @@ class Resolver:
         normalizer = Normalizer()
 
         resolve_from_string = lambda text: [{
-            'term': ent.text,
+            'token': ent.text,
             'entity': ent.label_,
             'description': get_entity_description(ent.label_)
         } for ent in SPACY(text).ents]
@@ -292,6 +293,33 @@ class Resolver:
             str: resolve_from_string,
             list: resolve_from_list
             
+        }
+
+        return execute.get(type(input_data))(input_data)
+
+    @staticmethod
+    def resolve_part_of_speech(input_data):
+        """
+        Resolve a marcação POS na entrada fornecida.
+
+        param : input_data : <list> ou <str>
+        return : <list> de <dict>
+        """
+        normalizer = Normalizer()
+
+        resolve_from_string = lambda text: [{
+            'token': token.text,
+            'tag': token.pos_,
+            'description': get_pos_tag_description(token.pos_)
+        } for token in SPACY(text)]
+
+        resolve_from_list = lambda text_list: resolve_from_string(
+            normalizer.list_to_string(text_list)
+        )
+
+        execute = {
+            str: resolve_from_string,
+            list: resolve_from_list
         }
 
         return execute.get(type(input_data))(input_data)
