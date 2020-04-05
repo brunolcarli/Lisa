@@ -10,8 +10,11 @@ from lisa_processing.util.nlp import (stemming, text_classifier,
                                       remove_punctuations, get_offense_level,
                                       get_tokens_pol)
 from lisa_processing.util.normalizer import Normalizer
+from lisa_processing.util.tools import get_entity_description
+
 
 SPACY = spacy.load('pt')
+
 
 class Resolver:
     """
@@ -264,3 +267,31 @@ class Resolver:
         output = execute.get(type(input_data))(input_data)
 
         return output
+
+    @staticmethod
+    def resolve_named_entity(input_data):
+        """
+        Resolve o processamento de entidades nomeadas.
+
+        param : input_data : <list> ou <str>
+        return : <list> de <dict>
+        """
+        normalizer = Normalizer()
+
+        resolve_from_string = lambda text: [{
+            'term': ent.text,
+            'entity': ent.label_,
+            'description': get_entity_description(ent.label_)
+        } for ent in SPACY(text).ents]
+
+        resolve_from_list = lambda text_list: resolve_from_string(
+            normalizer.list_to_string(text_list)
+        )
+
+        execute = {
+            str: resolve_from_string,
+            list: resolve_from_list
+            
+        }
+
+        return execute.get(type(input_data))(input_data)
