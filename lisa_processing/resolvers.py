@@ -7,7 +7,8 @@ from difflib import get_close_matches as closest_token
 from nltk import sent_tokenize, word_tokenize
 from lisa_processing.util.nlp import (stemming, text_classifier,
                                       get_word_offense_level, remove_stopwords,
-                                      remove_punctuations, get_offense_level)
+                                      remove_punctuations, get_offense_level,
+                                      get_tokens_pol)
 from lisa_processing.util.normalizer import Normalizer
 
 SPACY = spacy.load('pt')
@@ -55,22 +56,33 @@ class Resolver:
         return execute.get(str(type(input_data)))(input_data)
 
     @staticmethod
-    def resolve_dependency_parse(text):
+    def resolve_dependency_parse(input_data):
         """
         Resolução do processamento de Dependency Parsing
 
-        param : text : <str>
-        return <list>
+        param : input_data : <str> ou <list>
+        return <list> de <dict>
         """
-        tokens = SPACY(text)
+        normalizer = Normalizer()
+        resolve_from_list = lambda text_list: SPACY(
+            normalizer.list_to_string(text_list)
+        )
+
+        execute = {
+            str: SPACY,
+            list: resolve_from_list
+        }
+
+        tokens = execute.get(type(input_data))(input_data)
         result = []
 
         for token in tokens:
             result.append({
-                'element': token,
-                'children': list(token.children),
-                'ancestors': list(token.ancestors)
+                'element': token.text,
+                'children': [str(child) for child in token.children],
+                'ancestors': [str(anc) for anc in token.ancestors]
             })
+
         return result
 
     @staticmethod
@@ -232,3 +244,23 @@ class Resolver:
         is_offensive, average = execute.get(type(input_data))(input_data)
 
         return {'is_offensive': is_offensive, 'average': average}
+
+    @staticmethod
+    def resolve_word_polarity(input_data):
+        """
+        Resolve o processamento de polarização de palávras.
+
+        param : input_data : <str> ou <list>
+        return : <list> de <dict>
+        """
+        resolve_from_string = lambda text: get_tokens_pol(
+            Resolver.resolve_tokenize(text)
+        )
+
+        execute = {
+            str: resolve_from_string,
+            list: get_tokens_pol
+        }
+        output = execute.get(type(input_data))(input_data)
+
+        return output
