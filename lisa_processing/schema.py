@@ -456,7 +456,7 @@ class Query(graphene.ObjectType):
                     is_space=token.is_space,
                     is_stop=is_stopword(token.text),
                     lemma=token.lemma_,
-                    pos_tag=token.pos_,
+                    pos_tag=get_pos_tag_description(token.pos_),
                     vector=token.vector,
                     polarity=get_word_polarity(token.text),
                     is_offensive=get_offense_level(token.text)[0],
