@@ -464,3 +464,92 @@ class ResolverTests(TestCase):
 
         self.assertEqual(output['is_offensive'], False)
         self.assertTrue(output['average'] < 0.25)
+
+    def test_resolve_positive_word_polarity_from_string(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como positivas as palavras contidas em uma mensagem de texto.
+        """
+        text = 'Lindo amor magnífico'
+        output = self.resolver.resolve_word_polarity(text)
+
+        self.assertTrue(isinstance(output, list))
+        self.assertEqual(len(output), 3)
+        self.assertTrue(all(data['polarity'] == 1 for data in output))
+        self.assertEqual(output[0].get('token'), 'Lindo')
+        self.assertEqual(output[1].get('token'), 'amor')
+        self.assertEqual(output[2].get('token'), 'magnífico')
+
+    def test_resolve_neutral_word_polarity_from_string(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como nulo a polaridade dos termos contidos em uma entrada de texto.
+        """
+        text =  'Eu não vi, mas o Clodovil'
+        output = self.resolver.resolve_word_polarity(text)
+
+        self.assertEqual(len(output), 7)
+        self.assertTrue(all(data['polarity'] == 0 for data in output))
+        self.assertEqual(output[0]['token'], 'Eu')
+        self.assertEqual(output[1]['token'], 'não')
+        self.assertEqual(output[2]['token'], 'vi')
+        self.assertEqual(output[3]['token'], ',')
+        self.assertEqual(output[4]['token'], 'mas')
+        self.assertEqual(output[5]['token'], 'o')
+        self.assertEqual(output[6]['token'], 'Clodovil')
+
+    def test_resolve_negative_word_polarity_from_string(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como negativo os termos contidos em uma entrada de texto.
+        """
+        text = 'Maldita morte assassina'
+        output = self.resolver.resolve_word_polarity(text)
+
+        self.assertEqual(len(output), 3)
+        self.assertTrue(all(data['polarity'] == -1 for data in output))
+        self.assertEqual(output[0]['token'], 'Maldita')
+        self.assertEqual(output[1]['token'], 'morte')
+        self.assertEqual(output[2]['token'], 'assassina')
+
+    def test_resolve_positive_word_polarity_from_list(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como positivas as palavras contidas em uma lista de tokens.
+        """
+        tokens = ['Amor', 'Belo', 'Maravilhoso']
+        output = self.resolver.resolve_word_polarity(tokens)
+
+        self.assertEqual(len(output), 3)
+        self.assertTrue(all(data['polarity'] == 1 for data in output))
+        self.assertEqual(output[0].get('token'), 'Amor')
+        self.assertEqual(output[1].get('token'), 'Belo')
+        self.assertEqual(output[2].get('token'), 'Maravilhoso')
+
+    def test_resolve_neutral_word_polarity_from_list(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como nulo a polaridade dos termos contidos em uma lista de tokens.
+        """
+        tokens = ['Cinema', 'Filme', 'Redação']
+        output = self.resolver.resolve_word_polarity(tokens)
+
+        self.assertEqual(len(output), 3)
+        self.assertTrue(all(data['polarity'] == 0 for data in output))
+        self.assertEqual(output[0].get('token'), 'Cinema')
+        self.assertEqual(output[1].get('token'), 'Filme')
+        self.assertEqual(output[2].get('token'), 'Redação')
+
+    def test_resolve_negative_word_polarity_from_list(self):
+        """
+        Verifica que o resolver de word polarity classifica corretamente
+        como negativo a polaridade dos termos contidos em uma lista de tokens.
+        """
+        tokens = ['Errado', 'Burro', 'Incorreto']
+        output = self.resolver.resolve_word_polarity(tokens)
+
+        self.assertEqual(len(output), 3)
+        self.assertTrue(all(data['polarity'] == -1 for data in output))
+        self.assertEqual(output[0].get('token'), 'Errado')
+        self.assertEqual(output[1].get('token'), 'Burro')
+        self.assertEqual(output[2].get('token'), 'Incorreto')
