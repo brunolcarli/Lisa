@@ -14,6 +14,7 @@
 >![Version badge](https://img.shields.io/badge/version-0.1.20-silver.svg)
 ![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
 
 Demo:
 > [![Run on Repl.it](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
@@ -31,13 +32,17 @@ Atualmente a LISA está disponvível em sua versão demo e pode ser acessada atr
 ## Curl
 
 ```bash
- curl -X POST \ 
+$ curl -X POST \ 
      -H "Content-Type: application/json" \
      --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' \
      https://lisa--brunolcarli.repl.co/graphql/
 ```
 
-*Saída:* `{"data":{"sentimentExtraction":0.03333333333333333}}`
+*Saída:*
+
+```
+{"data":{"sentimentExtraction":0.03333333333333333}}
+```
 
 
 ## Python
@@ -45,8 +50,7 @@ Atualmente a LISA está disponvível em sua versão demo e pode ser acessada atr
 ```python
 >>> import requests
 >>> URL = 'https://lisa--brunolcarli.repl.co/graphql/'
->>> data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria
-")}'
+>>> data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
 >>> request = requests.post(URL, json={'query': data})
 >>> request.status_code
 200
@@ -66,6 +70,8 @@ Ao acessar diretemente o endpoint através do navegador você terá acesso ao *p
 </table>    
 
 <hr />
+
+A documentação das consultas disponíveis pode ser conferida [aqui](https://github.com/brunolcarli/Lisa/wiki/Queries).
 
 # Rodando localmente
 
@@ -135,3 +141,9 @@ $ make container
 ```
 
 <hr />
+
+# Doações
+
+Se esta plataforma lhe ajudou de alguma forma, despertou interesse ou se simplesmente quiseres colaborar nos custos par amanter a plataforma no ambiente de produção, eu agradeço de coração <3
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
