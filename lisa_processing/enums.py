@@ -35,17 +35,18 @@ class PreProcess(Enum):
     REMOVE_PUNCTUATION = 'remove_puncts'
 
 
-class Processing(Enum):
+class DataExtraction(Enum):
     """
-    Constantes representando os algoritmos de processamento.
+    Constantes representando os algoritmos de extração de dados e análise
+    sintática.
     """
+    NAMED_ENTITY = 'entities'
+    DEPENDECY_PARSE = 'dependencies'
+    PART_OF_SPEECH = 'pos'
     LEXICAL_TEXT_SENTIMENT = 'lexical_text_classifier'
     WORD_OFFENSE = 'word_offense'
     TEXT_OFFENSE = 'text_offense'
     WORD_POLARITY = 'word_pol'
-    NAMED_ENTITY = 'entities'
-    DEPENDECY_PARSE = 'dependencies'
-    PART_OF_SPEECH = 'pos'
 
 
 class Reducers(Enum):
