@@ -24,8 +24,50 @@ Demo:
 
 [Lisa](https://pt.wikipedia.org/wiki/Lisa_Simpson) é um serviço dedicado à execução e processamento de tarefas de linguagem natural e análise de sentimentos em texto (text mining). O nome é uma referência à fantástica personagem criada por [Matt Groening](https://pt.wikipedia.org/wiki/Matt_Groening). A plataforma também parte integrante do Trabalho de Conclusão de Curso desenvolvido para aquisição do grau de *Bacharel* em Engenharia de Software pela Universidade [Unicesumar](https://www.unicesumar.edu.br/home/).
 
+# Consumindo
 
-# Rodando
+Atualmente a LISA está disponvível em sua versão demo e pode ser acessada através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
+
+## Curl
+
+```bash
+ curl -X POST \ 
+     -H "Content-Type: application/json" \
+     --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' \
+     https://lisa--brunolcarli.repl.co/graphql/
+```
+
+*Saída:* `{"data":{"sentimentExtraction":0.03333333333333333}}`
+
+
+## Python
+
+```python
+>>> import requests
+>>> URL = 'https://lisa--brunolcarli.repl.co/graphql/'
+>>> data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria
+")}'
+>>> request = requests.post(URL, json={'query': data})
+>>> request.status_code
+200
+>>> request.text
+'{"data":{"sentimentExtraction":0.03333333333333333}}'
+>>>
+```
+
+## Playground
+
+Ao acessar diretemente o endpoint através do navegador você terá acesso ao *playground* onde poderá escrever diretamente as queries para LISA:
+
+<table align="center"><tr><td align="center" width="9999">
+<img src="https://i.ibb.co/27dTgKD/LISA-SCREENSAVE.gif" align="center" width="1200" alt="Project icon">
+</td></tr>
+
+</table>    
+
+<hr />
+
+# Rodando localmente
 
 ![Linux Badge](https://img.shields.io/badge/OS-Linux-black.svg)
 ![Apple badge](https://badgen.net/badge/OS/OSX/:color?icon=apple)
@@ -55,7 +97,7 @@ O serviço estará disponível em `localhost:2154/graphql`
 
 <table align="center"><tr><td align="center" width="9999">
 
-## Docker
+# Rodando com Docker
 
 <img src="https://media.giphy.com/media/l2Jei7zzXNV8xCKzK/giphy.gif" align="center" width="300" alt="Project icon">
 
@@ -93,9 +135,3 @@ $ make container
 ```
 
 <hr />
-
-<table align="center"><tr><td align="center" width="9999">
-<img src="https://i.ibb.co/27dTgKD/LISA-SCREENSAVE.gif" align="center" width="1200" alt="Project icon">
-</td></tr>
-
-</table>    
