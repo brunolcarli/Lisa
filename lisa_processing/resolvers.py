@@ -8,7 +8,8 @@ from nltk import sent_tokenize, word_tokenize
 from lisa_processing.util.nlp import (stemming, text_classifier,
                                       get_word_offense_level, remove_stopwords,
                                       remove_punctuations, get_offense_level,
-                                      get_tokens_pol)
+                                      get_tokens_pol, is_stopword,
+                                      get_word_polarity)
 from lisa_processing.util.normalizer import Normalizer
 from lisa_processing.util.tools import (get_entity_description,
                                         get_pos_tag_description)
@@ -311,6 +312,44 @@ class Resolver:
             'token': token.text,
             'tag': token.pos_,
             'description': get_pos_tag_description(token.pos_)
+        } for token in SPACY(text)]
+
+        resolve_from_list = lambda text_list: resolve_from_string(
+            normalizer.list_to_string(text_list)
+        )
+
+        execute = {
+            str: resolve_from_string,
+            list: resolve_from_list
+        }
+
+        return execute.get(type(input_data))(input_data)
+
+    @staticmethod
+    def resolve_token_inspection(input_data):
+        """
+        Resolução da inspeção de tokens.
+
+        param : input_data : <list> ou <str>
+        return : <list> de <dict>
+        """
+        normalizer = Normalizer()
+
+        resolve_from_string = lambda text: [{
+            'token': token.text,
+            'is_alpha': token.is_alpha,
+            'is_ascii': token.is_ascii,
+            'is_currency': token.is_currency,
+            'is_digit': token.is_digit,
+            'is_punct': token.is_punct,
+            'is_space': token.is_space,
+            'is_stop': is_stopword(token.text),
+            'lemma': token.lemma_,
+            'pos_tag': get_pos_tag_description(token.pos_),
+            'vector': token.vector,
+            'polarity': get_word_polarity(token.text),
+            'is_offensive': get_offense_level(token.text)[0],
+            'root': stemming([token.text])[0]
         } for token in SPACY(text)]
 
         resolve_from_list = lambda text_list: resolve_from_string(
