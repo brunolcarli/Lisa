@@ -351,7 +351,7 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # text classifier
     ##########################################################################
-    text_classifier = graphene.Float(
+    sentiment_extraction = graphene.Float(
         text=graphene.String(required=True, description='Text to classify.'),
         algorithm=graphene.Argument(
             enums.WordPolarityAlgorithms,
@@ -359,11 +359,11 @@ class Query(graphene.ObjectType):
         )
     )
 
-    def resolve_text_classifier(self, info, **kwargs):
+    def resolve_sentiment_extraction(self, info, **kwargs):
         """
-        Classifica a polaridade do texto de acordo com o algoritmo léxico de
-        Taboada, retornado do processamento um número de ponto flutuante entre
-        -1 e 1 podendo representar a negatividade, neutralidade ou positividade
+        Extrai o sentimento com o algoritmo léxico de Taboada, retornado do
+        processamento um número de ponto flutuante entre -1 e 1 podendo
+        representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
         text = kwargs.get('text')
@@ -481,22 +481,22 @@ class Query(graphene.ObjectType):
     # Similarity
     ##########################################################################
     similarity = graphene.Float(
-        token_a=graphene.String(
+        first_token=graphene.String(
             required=True,
-            description='First term'
+            description='First term.'
         ),
-        token_b=graphene.String(
+        second_token=graphene.String(
             required=True,
-            description='Second term'
+            description='Second term.'
         ),
-        description='Compares the similarity between token A and token B.'
+        description='Compares the similarity between first and second token.'
     )
 
     def resolve_similarity(self, info, **kwargs):
-        a = SPACY(kwargs.get('token_a'))
-        b = SPACY(kwargs.get('token_b'))
+        first = SPACY(kwargs.get('first_token'))
+        second = SPACY(kwargs.get('second_token'))
 
-        return a.similarity(b)
+        return first.similarity(second)
 
     ##########################################################################
     # Custom pipeline

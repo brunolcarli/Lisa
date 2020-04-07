@@ -43,7 +43,7 @@ class DataExtraction(Enum):
     NAMED_ENTITY = 'entities'
     DEPENDECY_PARSE = 'dependencies'
     PART_OF_SPEECH = 'pos'
-    LEXICAL_TEXT_SENTIMENT = 'lexical_text_classifier'
+    SENTIMENT_EXTRACTION = 'lexical_text_classifier'
     WORD_OFFENSE = 'word_offense'
     TEXT_OFFENSE = 'text_offense'
     WORD_POLARITY = 'word_pol'
