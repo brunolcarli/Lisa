@@ -11,16 +11,15 @@ from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from lisa_processing import enums
+from lisa_processing.resolvers import Resolver
+from lisa_processing.util.types import DynamicScalar
+from lisa_processing.util.pipelines import CustomPipeline
+from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level,
                                       is_stopword)
-from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
-from lisa_processing.util.pipelines import (execute_pre_processing, execute_reducer,
-                                            execute_processing)
-from lisa_processing.resolvers import Resolver
-from lisa_processing.util.types import DynamicScalar
 
 
 SPACY = spacy.load('pt')
@@ -125,15 +124,27 @@ class InspectTokenType(graphene.ObjectType):
     root = graphene.String(description='Stemmed root extracted from token.')
 
 
-class CustomPipeline(graphene.ObjectType):
+class CustomPipelineType(graphene.ObjectType):
     """
     Define a estrutura de resposta para consultas de pipeline customizado
     """
     text = graphene.String(description='Processed text.')
-    chosen_pre_processment = graphene.List(enums.PreProcess)
-    chosen_reducer = enums.Reducers()
-    chosen_processment = enums.Processing()
-    output = DynamicScalar()
+    chosen_pre_processment = graphene.List(
+        enums.PreProcess,
+        description='List of the selected preprocessing features.'
+    )
+    chosen_reducer = enums.Reducers(
+        description='Selected word reducer feature.'
+    )
+    chosen_data_extraction = enums.DataExtraction(
+        description='Selected data extraction feature.'
+    )
+    output = DynamicScalar(description='Pipeline output.')
+    token_inspection = graphene.List(
+        InspectTokenType,
+        description='Enables the return of inspected tokens of the pre-processed'\
+                    ' data at cost of longer processing time. Default=False'
+    )
 
 
 class Query(graphene.ObjectType):
@@ -491,7 +502,7 @@ class Query(graphene.ObjectType):
     # Custom pipeline
     ##########################################################################
     custom_pipeline = graphene.Field(
-        CustomPipeline,
+        CustomPipelineType,
         text=graphene.String(
             required=True,
             description='Text input to be processed!'
@@ -504,9 +515,12 @@ class Query(graphene.ObjectType):
             enums.Reducers,
             description='Root and lemma reducers.'
         ),
-        processor=graphene.Argument(
-            enums.Processing,
-            description='Processing operations over the pipelined data.'
+        data_extraction=graphene.Argument(
+            enums.DataExtraction,
+            description='Process data extraction operations over the data.'
+        ),
+        enable_token_inspection=graphene.Boolean(
+            description='Enables the token inspection before final processing.'
         ),
         description='Returns the result of a custom pipeline!'
     )
@@ -517,23 +531,34 @@ class Query(graphene.ObjectType):
 
         pre_processing = kwargs.get('pre_process')
         reducer = kwargs.get('reducer')
-        processing = kwargs.get('processor')
+        data_extraction = kwargs.get('data_extraction')
 
         if pre_processing:
-            output = execute_pre_processing(output, pre_processing)
+            output = CustomPipeline.execute_pre_processing(output, pre_processing)
 
         if reducer:
-            output = execute_reducer(output, reducer)
+            output = CustomPipeline.execute_reducer(output, reducer)
 
-        if processing:
-            output = execute_processing(output, processing)
+        # Inspeciona os tokens antes do processamento final
+        if kwargs.get('enable_token_inspection', False):
+            token_inspection = [InspectTokenType(**data) for data
+                                in Resolver.resolve_token_inspection(output)]
+        else:
+            token_inspection = []
 
-        return CustomPipeline(
+        if data_extraction:
+            output = CustomPipeline.execute_data_extraction(
+                output,
+                data_extraction
+            )
+
+        return CustomPipelineType(
             text=text,
             chosen_pre_processment=pre_processing,
             chosen_reducer=reducer,
-            chosen_processment=processing,
-            output=output
+            chosen_data_extraction=data_extraction,
+            output=output,
+            token_inspection=token_inspection
         )
 
     ##########################################################################
