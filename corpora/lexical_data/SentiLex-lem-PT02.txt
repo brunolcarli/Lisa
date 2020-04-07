@@ -1070,6 +1070,8 @@ bisonho.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 bissexual.PoS=Adj;TG=HUM:N0;POL:N0=0;ANOT=MAN
 bizarria.PoS=N;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 bizarro.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+bixa.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
+bixona.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 blasfemador.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 blasfémia.PoS=N;TG=HUM:N0;POL:N0=-1;ANOT=MAN
 blasfemo.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
