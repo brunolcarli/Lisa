@@ -170,10 +170,7 @@ class Query(graphene.ObjectType):
         """
         Processa a requisição de sentence segmentation conforme RF001.
         """
-        text = kwargs.get('text')
-        segmented_text = sent_tokenize(text)
-
-        return segmented_text
+        return Resolver.resolve_sentence_segmentation(kwargs.get('text'))
 
     ##########################################################################
     # WORD TOKENIZE
