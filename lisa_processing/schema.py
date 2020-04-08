@@ -188,10 +188,7 @@ class Query(graphene.ObjectType):
         """
         Processa requisição para atomização
         """
-        text = kwargs.get('text')
-        tokenized = word_tokenize(text)
-
-        return tokenized
+        return Resolver.resolve_tokenize(kwargs.get('text'))
 
     ##########################################################################
     # PART OF SPEECH
