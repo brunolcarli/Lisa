@@ -4,7 +4,7 @@
 
 # LISA
 
-*Lexical Interpreter for Sentiment Analysis*
+*Lexical Interface for Sentiment Analysis*
 </td></tr>
 
 </table>    
