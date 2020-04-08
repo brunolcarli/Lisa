@@ -10,11 +10,14 @@ import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
-from lisa_processing.enums import Algorithms, WordPolarityAlgorithms, Language
+from lisa_processing import enums
+from lisa_processing.resolvers import Resolver
+from lisa_processing.util.types import DynamicScalar
+from lisa_processing.util.pipelines import CustomPipeline
+from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       get_offense_level, get_word_offense_level,
                                       is_stopword)
-from lisa_processing.util.nlp import stemming as stem
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
 
@@ -121,6 +124,29 @@ class InspectTokenType(graphene.ObjectType):
     root = graphene.String(description='Stemmed root extracted from token.')
 
 
+class CustomPipelineType(graphene.ObjectType):
+    """
+    Define a estrutura de resposta para consultas de pipeline customizado
+    """
+    text = graphene.String(description='Processed text.')
+    chosen_pre_processment = graphene.List(
+        enums.PreProcess,
+        description='List of the selected preprocessing features.'
+    )
+    chosen_reducer = enums.Reducers(
+        description='Selected word reducer feature.'
+    )
+    chosen_data_extraction = enums.DataExtraction(
+        description='Selected data extraction feature.'
+    )
+    output = DynamicScalar(description='Pipeline output.')
+    token_inspection = graphene.List(
+        InspectTokenType,
+        description='Enables the return of inspected tokens of the pre-processed'\
+                    ' data at cost of longer processing time. Default=False'
+    )
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -139,6 +165,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process a sentence segmentation over a text input.'
     )
+
     def resolve_sentence_segmentation(self, info, **kwargs):
         """
         Processa a requisição de sentence segmentation conforme RF001.
@@ -159,6 +186,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process the word tokenizer request.'
     )
+
     def resolve_word_tokenize(self, info, **kwargs):
         """
         Processa requisição para atomização
@@ -179,6 +207,7 @@ class Query(graphene.ObjectType):
         ),
         description='Process request for part of speech.'
     )
+
     def resolve_part_of_speech(self, info, **kwargs):
         """
         Processa requisição de part of speech
@@ -198,27 +227,18 @@ class Query(graphene.ObjectType):
     lemmatize = graphene.List(
         graphene.String,
         text=graphene.String(
+            required=True,
             description='Process lemmatization with a non tokenized text input.'
         ),
         description='Lemmatize an inputed text or list of words.'
     )
+
     def resolve_lemmatize(self, info, **kwargs):
         """
         Retorna o processamento de lematização de uma entrada de texto ou
         lista de palavras.
         """
-
-        # Não pode não fornecer nenhum filtro
-        if not kwargs:
-            raise Exception('Please choose a filter input option!')
-
-        # captura os possíveis filtros
-        text = kwargs.get('text')
-
-        tokens = SPACY(text)
-        data = [token for token in tokens]
-
-        return [token.lemma_ for token in data]
+        return Resolver.resolve_lemming(kwargs.get('text'))
 
     ##########################################################################
     # STOP WORDS
@@ -230,7 +250,7 @@ class Query(graphene.ObjectType):
             description='Input text for process the stop words removal.'
         ),
         algorithm=graphene.Argument(
-            Algorithms,
+            enums.Algorithms,
             description='Defines an processing algorithm. Default NLTK'
         ),
         description='Remove stop words from inputed text.'
@@ -268,18 +288,7 @@ class Query(graphene.ObjectType):
         Processa o parsing de dependências e retorna uma lista contendo
         as palávras da sentença, seus dependentes e antecessores.
         """
-        text = kwargs.get('text')
-        doc = SPACY(text)
-        result = []
-
-        for word in doc:
-            result.append({
-                'element': word,
-                'children': list(word.children),
-                'ancestors': list(word.ancestors)
-            })
-
-        return result
+        return Resolver.resolve_dependency_parse(kwargs.get('text'))
 
     ##########################################################################
     # NAMED ENTITY
@@ -319,10 +328,11 @@ class Query(graphene.ObjectType):
             required=True
         ),
         algorithm=graphene.Argument(
-            WordPolarityAlgorithms,
+            enums.WordPolarityAlgorithms,
             description='Algorythm to process the the text. Default=LEXICAL'
         )
     )
+
     def resolve_word_polarity(self, info, **kwargs):
         """
         Processa a resolução de polaridades de palavras.
@@ -341,18 +351,19 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # text classifier
     ##########################################################################
-    text_classifier = graphene.Float(
+    sentiment_extraction = graphene.Float(
         text=graphene.String(required=True, description='Text to classify.'),
         algorithm=graphene.Argument(
-            WordPolarityAlgorithms,
+            enums.WordPolarityAlgorithms,
             description='Defines the processing algorithm backend. Default=LEXICAL'
         )
     )
-    def resolve_text_classifier(self, info, **kwargs):
+
+    def resolve_sentiment_extraction(self, info, **kwargs):
         """
-        Classifica a polaridade do texto de acordo com o algoritmo léxico de
-        Taboada, retornado do processamento um númerod e ponto flutuante entre
-        -1 e 1 podendo representar a negatividade, neutralidade ou positividade
+        Extrai o sentimento com o algoritmo léxico de Taboada, retornado do
+        processamento um número de ponto flutuante entre -1 e 1 podendo
+        representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
         text = kwargs.get('text')
@@ -415,16 +426,17 @@ class Query(graphene.ObjectType):
     ##########################################################################
     stemming = graphene.List(
         StemmingType,
-        word_list=graphene.List(
-            graphene.String,
+        text=graphene.String(
             required=True,
-            description='List of terms to be stemmed!'
+            description='Text to be stemmed!'
         ),
         description='Returns root of each listed word'
     )
+
     def resolve_stemming(self, info, **kwargs):
-        data = stem(kwargs.get('word_list'))
-        paired_data = list(zip(kwargs.get('word_list'), data))
+        data = Resolver.resolve_stemming(kwargs.get('text'))
+
+        paired_data = list(zip(kwargs.get('text').split(), data))
         return [StemmingType(token=pair[0], root=pair[1]) for pair in paired_data]
 
     ##########################################################################
@@ -438,6 +450,7 @@ class Query(graphene.ObjectType):
         ),
         description='Returns full data of each token on the sentence.'
     )
+
     def resolve_inspect_tokens(self, info, **kwargs):
         response = []
         tokens = SPACY(kwargs.get('text'))
@@ -454,7 +467,7 @@ class Query(graphene.ObjectType):
                     is_space=token.is_space,
                     is_stop=is_stopword(token.text),
                     lemma=token.lemma_,
-                    pos_tag=token.pos_,
+                    pos_tag=get_pos_tag_description(token.pos_),
                     vector=token.vector,
                     polarity=get_word_polarity(token.text),
                     is_offensive=get_offense_level(token.text)[0],
@@ -468,21 +481,85 @@ class Query(graphene.ObjectType):
     # Similarity
     ##########################################################################
     similarity = graphene.Float(
-        token_a=graphene.String(
+        first_token=graphene.String(
             required=True,
-            description='First term'
+            description='First term.'
         ),
-        token_b=graphene.String(
+        second_token=graphene.String(
             required=True,
-            description='Second term'
+            description='Second term.'
         ),
-        description='Compares the similarity between token A and token B.'
+        description='Compares the similarity between first and second token.'
     )
-    def resolve_similarity(self, info, **kwargs):
-        a = SPACY(kwargs.get('token_a'))
-        b = SPACY(kwargs.get('token_b'))
 
-        return a.similarity(b)
+    def resolve_similarity(self, info, **kwargs):
+        first = SPACY(kwargs.get('first_token'))
+        second = SPACY(kwargs.get('second_token'))
+
+        return first.similarity(second)
+
+    ##########################################################################
+    # Custom pipeline
+    ##########################################################################
+    custom_pipeline = graphene.Field(
+        CustomPipelineType,
+        text=graphene.String(
+            required=True,
+            description='Text input to be processed!'
+        ),
+        pre_process=graphene.List(
+            enums.PreProcess,
+            description='Pre-process oeprations in the given ordering'
+        ),
+        reducer=graphene.Argument(
+            enums.Reducers,
+            description='Root and lemma reducers.'
+        ),
+        data_extraction=graphene.Argument(
+            enums.DataExtraction,
+            description='Process data extraction operations over the data.'
+        ),
+        enable_token_inspection=graphene.Boolean(
+            description='Enables the token inspection before final processing.'
+        ),
+        description='Returns the result of a custom pipeline!'
+    )
+
+    def resolve_custom_pipeline(self, info, **kwargs):
+        text = kwargs.get('text')
+        output = text
+
+        pre_processing = kwargs.get('pre_process')
+        reducer = kwargs.get('reducer')
+        data_extraction = kwargs.get('data_extraction')
+
+        if pre_processing:
+            output = CustomPipeline.execute_pre_processing(output, pre_processing)
+
+        if reducer:
+            output = CustomPipeline.execute_reducer(output, reducer)
+
+        # Inspeciona os tokens antes do processamento final
+        if kwargs.get('enable_token_inspection', False):
+            token_inspection = [InspectTokenType(**data) for data
+                                in Resolver.resolve_token_inspection(output)]
+        else:
+            token_inspection = []
+
+        if data_extraction:
+            output = CustomPipeline.execute_data_extraction(
+                output,
+                data_extraction
+            )
+
+        return CustomPipelineType(
+            text=text,
+            chosen_pre_processment=pre_processing,
+            chosen_reducer=reducer,
+            chosen_data_extraction=data_extraction,
+            output=output,
+            token_inspection=token_inspection
+        )
 
     ##########################################################################
     # Help
@@ -490,11 +567,12 @@ class Query(graphene.ObjectType):
     help = graphene.List(
         graphene.String,
         language=graphene.Argument(
-            Language,
+            enums.Language,
             description='Help Text language. Default=Pt-Br!'
         ),
         description='Returns the repository docs link!'
     )
+
     def resolve_help(self, info, **kwargs):
         language_options = {
             'en': 'En: For more detailed information please visit the ' \
@@ -511,6 +589,7 @@ class Query(graphene.ObjectType):
     # Versão da plataforma
     ##########################################################################
     lisa = graphene.List(graphene.String)
+
     def resolve_lisa(self, info, **kwargs):
         """
         Isso é um ovo de páscoa.

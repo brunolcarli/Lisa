@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-VERSION = '0.1.20'
+VERSION = '0.2.0'
 
 BANNER = f'''
 ====================
@@ -20,7 +20,7 @@ BANNER = f'''
 ║  ║╚═╗╠═╣  ╠═╣╠═╝║
 ╩═╝╩╚═╝╩ ╩  ╩ ╩╩  ╩
 ====================
- Lexical Interpreter
+  Lexical Interface
 for Sentiment Analysis
 
 Application Programming 
