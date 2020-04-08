@@ -206,14 +206,8 @@ class Query(graphene.ObjectType):
         """
         Processa requisição de part of speech
         """
-        data = SPACY(kwargs.get('text'))
-        response = [
-            PartOfSpeechType(
-                token=token.text,
-                tag=token.pos_,
-                description=get_pos_tag_description(token.pos_)) for token in data
-        ]
-        return response
+        resolved_data = Resolver.resolve_part_of_speech(kwargs.get('text'))
+        return [PartOfSpeechType(**data) for data in resolved_data]
 
     ##########################################################################
     # LEMMING
