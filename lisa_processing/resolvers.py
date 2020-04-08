@@ -33,10 +33,10 @@ class Resolver:
         normalizer = Normalizer()
         lemma_from_list = lambda texts: SPACY(normalizer.list_to_string(texts))
         execute = {
-            "<class 'str'>": SPACY,
-            "<class 'list'>": lemma_from_list
+            str: SPACY,
+            list: lemma_from_list
         }
-        tokens = execute.get(str(type(input_data)))(input_data)
+        tokens = execute.get(type(input_data))(input_data)
 
         return [token.lemma_ for token in tokens]
 
@@ -55,10 +55,10 @@ class Resolver:
             Resolver.resolve_tokenize(text)
         )
         execute = {
-            "<class 'str'>": stem_from_str,
-            "<class 'list'>": stem_from_list
+            str: stem_from_str,
+            list: stem_from_list
         }
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_dependency_parse(input_data):
@@ -104,11 +104,11 @@ class Resolver:
             normalizer.list_to_string(tokens)
         )
         execute = {
-            "<class 'str'>": text_classifier,
-            "<class 'list'>": classify_from_list
+            str: text_classifier,
+            list: classify_from_list
         }
 
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_sentence_segmentation(input_data):
@@ -123,11 +123,11 @@ class Resolver:
             itertools.chain(*[sent_tokenize(sent) for sent in sent_list])
         )
         execute = {
-            "<class 'str'>": sent_tokenize,
-            "<class 'list'>": list_sent_tokenize
+            str: sent_tokenize,
+            list: list_sent_tokenize
         }
 
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_tokenize(input_data):
@@ -142,11 +142,11 @@ class Resolver:
             itertools.chain(*[word_tokenize(text) for text in texts])
         )
         execute = {
-            "<class 'str'>": word_tokenize,
-            "<class 'list'>": list_tokenize
+            str: word_tokenize,
+            list: list_tokenize
         }
 
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_remove_stopwords(input_data):
@@ -165,11 +165,11 @@ class Resolver:
             Resolver.resolve_tokenize(normalizer.list_to_string(text_list))
         )
         execute = {
-            "<class 'str'>": remove_sw_from_str,
-            "<class 'list'>": remove_sw_from_list
+            str: remove_sw_from_str,
+            list: remove_sw_from_list
         }
 
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_remove_puncts(input_data):
@@ -188,11 +188,11 @@ class Resolver:
             Resolver.resolve_tokenize(normalizer.list_to_string(text_list))
         )
         execute = {
-            "<class 'str'>": remove_puncts_from_str,
-            "<class 'list'>": remove_puncts_from_list
+            str: remove_puncts_from_str,
+            list: remove_puncts_from_list
         }
 
-        return execute.get(str(type(input_data)))(input_data)
+        return execute.get(type(input_data))(input_data)
 
     @staticmethod
     def resolve_word_offense(input_data):
@@ -208,10 +208,10 @@ class Resolver:
         )
         resolve_from_str = lambda text: Resolver.resolve_tokenize(text)
         execute = {
-            "<class 'str'>": resolve_from_str,
-            "<class 'list'>": resolve_from_list
+            str: resolve_from_str,
+            list: resolve_from_list
         }
-        tokens = execute.get(str(type(input_data)))(input_data)
+        tokens = execute.get(type(input_data))(input_data)
         pairs = get_word_offense_level(tokens)
 
         output = []
