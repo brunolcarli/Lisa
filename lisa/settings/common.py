@@ -20,7 +20,7 @@ BANNER = f'''
 ║  ║╚═╗╠═╣  ╠═╣╠═╝║
 ╩═╝╩╚═╝╩ ╩  ╩ ╩╩  ╩
 ====================
- Lexical Interpreter
+  Lexical Interface
 for Sentiment Analysis
 
 Application Programming 
