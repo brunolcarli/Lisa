@@ -339,10 +339,7 @@ class Query(graphene.ObjectType):
     ##########################################################################
     sentiment_extraction = graphene.Float(
         text=graphene.String(required=True, description='Text to classify.'),
-        algorithm=graphene.Argument(
-            enums.WordPolarityAlgorithms,
-            description='Defines the processing algorithm backend. Default=LEXICAL'
-        )
+        description='Extracts text sentiment with lexical analysis.'
     )
 
     def resolve_sentiment_extraction(self, info, **kwargs):
@@ -352,14 +349,7 @@ class Query(graphene.ObjectType):
         representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
-        text = kwargs.get('text')
-        algorithm = kwargs.get('algorithm', 'lexical')
-
-        if algorithm == 'spacy':
-            doc = SPACY(text)
-            return doc.sentiment
-
-        return text_classifier(text)
+        return Resolver.resolve_lexical_text_classifier(kwargs.get('text'))
 
     ##########################################################################
     # Text Offense
