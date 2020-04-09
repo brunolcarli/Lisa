@@ -59,7 +59,7 @@ class TextOffenseType(graphene.ObjectType):
     average = graphene.Float(
         description='Avarage calc on based on bad words counting!'
     )
-    result = graphene.Boolean(
+    is_offensive = graphene.Boolean(
         description='True if the sentence is offensive, False if not!'
     )
 
@@ -268,13 +268,8 @@ class Query(graphene.ObjectType):
         detalhando a operação realizada.
         """
         input_data = kwargs.get('text')
-        resolved = Resolver.resolve_datailed_stopword_removal(input_data)
-        return RemoveStopWordsType(
-            inputed_data=input_data,
-            text_output=resolved.get('text_output'),
-            list_output=resolved.get('list_output'),
-            removed_tokens=resolved.get('removed_tokens')
-        )
+        resolved_data = Resolver.resolve_datailed_stopword_removal(input_data)
+        return RemoveStopWordsType(inputed_data=input_data, **resolved_data)
 
     ##########################################################################
     # DEPENDENCY PARSING
@@ -364,9 +359,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_text_offense_level(self, info, **kwargs):
-        text = kwargs.get('text')
-        result, average = get_offense_level(text)
-        return TextOffenseType(text=text, average=average, result=result)
+        resolved_data = Resolver.resolve_text_offense(kwargs.get('text'))
+        return TextOffenseType(text=kwargs.get('text'), **resolved_data)
 
     ##########################################################################
     # Word Offense
