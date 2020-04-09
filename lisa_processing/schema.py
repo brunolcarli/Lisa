@@ -45,10 +45,10 @@ class NamedEntityType(graphene.ObjectType):
 class WordPolarityType(graphene.ObjectType):
     """
     Padrão de resposta para processamentos de identificação de polaridades
-    de palávras.
+    de palavras.
     """
-    word = graphene.String()
-    polarity = graphene.Float()
+    token = graphene.String(description='Analysed token.')
+    polarity = graphene.Float(description='Token polarity.')
 
 
 class TextOffenseType(graphene.ObjectType):
@@ -323,10 +323,6 @@ class Query(graphene.ObjectType):
             description='List of words to process',
             required=True
         ),
-        algorithm=graphene.Argument(
-            enums.WordPolarityAlgorithms,
-            description='Algorythm to process the the text. Default=LEXICAL'
-        )
     )
 
     def resolve_word_polarity(self, info, **kwargs):
@@ -335,14 +331,8 @@ class Query(graphene.ObjectType):
         O Processamento aceita uma lista de palávras, retornando desta forma,
         uma lista de objetos contendo a palávra processada e sua polaridade.
         """
-        word_list = kwargs.get('word_list')
-        algorithm = kwargs.get('algorithm', 'lexical')
-
-        if algorithm == 'spacy':
-            doc = [SPACY(word) for word in word_list]
-            return [WordPolarityType(word=w.text, polarity=w.sentiment) for w in doc]
-
-        return [WordPolarityType(word=w, polarity=get_word_polarity(w)) for w in word_list]
+        resolved_data = Resolver.resolve_word_polarity(kwargs.get('word_list'))
+        return [WordPolarityType(**data) for data in resolved_data]
 
     ##########################################################################
     # text classifier
