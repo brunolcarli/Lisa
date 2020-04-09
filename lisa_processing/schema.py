@@ -37,7 +37,7 @@ class NamedEntityType(graphene.ObjectType):
     """
     Padrão de resposta para processamento de entidades nomeadas.
     """
-    term = graphene.String()
+    token = graphene.String()
     entity = graphene.String()
     description = graphene.String()
 
@@ -310,16 +310,8 @@ class Query(graphene.ObjectType):
         """
         Processa a resolução de entidades nomeadas a partir de um texto.
         """
-        text_input = kwargs.get('text')
-        doc = SPACY(text_input)
-
-        return [
-            NamedEntityType(
-                term=ent.text,
-                entity=ent.label_,
-                description=get_entity_description(ent.label_)
-            ) for ent in doc.ents
-        ]
+        resolved_data = Resolver.resolve_named_entity(kwargs.get('text'))
+        return [NamedEntityType(**data) for data in resolved_data]
 
     ##########################################################################
     # Word Polarity
