@@ -9,7 +9,7 @@ from lisa_processing.util.nlp import (stemming, text_classifier,
                                       get_word_offense_level, remove_stopwords,
                                       remove_punctuations, get_offense_level,
                                       get_tokens_pol, is_stopword,
-                                      get_word_polarity)
+                                      get_word_polarity, detailed_stopword_removal)
 from lisa_processing.util.normalizer import Normalizer
 from lisa_processing.util.tools import (get_entity_description,
                                         get_pos_tag_description)
@@ -362,3 +362,26 @@ class Resolver:
         }
 
         return execute.get(type(input_data))(input_data)
+
+    @staticmethod
+    def resolve_datailed_stopword_removal(input_data):
+        """
+        Resolve a remoção detalhada de palávras vazias a partir de:
+            - uma lista de sentenças <list>; ou
+            - um texto puro (<str>)
+
+        return : <dict> : Dicionário contendo detalhes da operação
+        """
+        normalizer = Normalizer()
+        remove_sw_from_str = lambda text: detailed_stopword_removal(
+            Resolver.resolve_tokenize(text)
+        )
+        remove_sw_from_list = lambda text_list: detailed_stopword_removal(
+            Resolver.resolve_tokenize(normalizer.list_to_string(text_list))
+        )
+        execute = {
+            str: remove_sw_from_str,
+            list: remove_sw_from_list
+        }
+
+        return execute.get(type(input_data))(input_data)        

@@ -147,6 +147,28 @@ class CustomPipelineType(graphene.ObjectType):
     )
 
 
+class RemoveStopWordsType(graphene.ObjectType):
+    """
+    Estrutura de resposta para consultas de remoção de stop words.
+    """
+    inputed_data = graphene.String(description='Inputed text.')
+    text_output = graphene.String(description='Text without the stop words.')
+    list_output = graphene.List(
+        graphene.String,
+        description='Token list from the processed data without the stop words.'
+    )
+    removed_tokens = graphene.List(
+        graphene.String,
+        description='Stop words removed from the inputed data.'
+    )
+    removed_tokens_count = graphene.Int(
+        description='Number of stop words removed.'
+    )
+
+    def resolve_removed_tokens_count(self, info, **kwargs):
+        return len(self.removed_tokens)
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -231,34 +253,28 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # STOP WORDS
     ##########################################################################
-    remove_stop_words = graphene.List(
-        graphene.String,
+    remove_stop_words = graphene.Field(
+        RemoveStopWordsType,
         text=graphene.String(
             required=True,
             description='Input text for process the stop words removal.'
-        ),
-        algorithm=graphene.Argument(
-            enums.Algorithms,
-            description='Defines an processing algorithm. Default NLTK'
         ),
         description='Remove stop words from inputed text.'
     )
 
     def resolve_remove_stop_words(self, info, **kwargs):
         """
-        Remove as palavras vazias do texto inserido e retorna uma lista das
-        palávras restantes no texto.
+        Remove as palavras vazias do texto inserido e retorna um objeto
+        detalhando a operação realizada.
         """
-        algorithm = kwargs.get('algorithm', 'nltk')
-        text_input = kwargs.get('text')
-        portuguese_stopwords = stopwords.words('portuguese')
-
-        if algorithm == 'nltk':
-            tokens = word_tokenize(text_input)
-            return [word for word in tokens if word not in portuguese_stopwords]
-
-        doc = SPACY(text_input)
-        return [word for word in doc if not word.is_stop]
+        input_data = kwargs.get('text')
+        resolved = Resolver.resolve_datailed_stopword_removal(input_data)
+        return RemoveStopWordsType(
+            inputed_data=input_data,
+            text_output=resolved.get('text_output'),
+            list_output=resolved.get('list_output'),
+            removed_tokens=resolved.get('removed_tokens')
+        )
 
     ##########################################################################
     # DEPENDENCY PARSING
