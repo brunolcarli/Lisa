@@ -385,3 +385,14 @@ class Resolver:
         }
 
         return execute.get(type(input_data))(input_data)        
+
+    @staticmethod
+    def resolve_similarity(first, second):
+        """
+        Resolve a comparação de similaridade entre
+        dois termos.
+        """
+        first = SPACY(first)
+        second = SPACY(second)
+
+        return first.similarity(second)

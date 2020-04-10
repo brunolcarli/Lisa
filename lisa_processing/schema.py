@@ -429,10 +429,10 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_similarity(self, info, **kwargs):
-        first = SPACY(kwargs.get('first_token'))
-        second = SPACY(kwargs.get('second_token'))
-
-        return first.similarity(second)
+        return Resolver.resolve_similarity(
+            kwargs.get('first_token'),
+            kwargs.get('second_token')
+        )
 
     ##########################################################################
     # Custom pipeline
