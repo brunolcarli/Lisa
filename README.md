@@ -11,7 +11,7 @@
 
 <div align="center">
 
->![Version badge](https://img.shields.io/badge/version-0.2.0-silver.svg)
+>![Version badge](https://img.shields.io/badge/version-0.2.1-silver.svg)
 ![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
