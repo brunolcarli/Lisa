@@ -5,7 +5,6 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
-import spacy
 import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
@@ -22,8 +21,6 @@ from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
 
 
-SPACY = spacy.load('pt')
-
 class DependencyParseType(graphene.ObjectType):
     """
     Padrão de resposta para processamentos de parsing de dependência.
@@ -37,7 +34,7 @@ class NamedEntityType(graphene.ObjectType):
     """
     Padrão de resposta para processamento de entidades nomeadas.
     """
-    term = graphene.String()
+    token = graphene.String()
     entity = graphene.String()
     description = graphene.String()
 
@@ -45,10 +42,10 @@ class NamedEntityType(graphene.ObjectType):
 class WordPolarityType(graphene.ObjectType):
     """
     Padrão de resposta para processamentos de identificação de polaridades
-    de palávras.
+    de palavras.
     """
-    word = graphene.String()
-    polarity = graphene.Float()
+    token = graphene.String(description='Analysed token.')
+    polarity = graphene.Float(description='Token polarity.')
 
 
 class TextOffenseType(graphene.ObjectType):
@@ -59,7 +56,7 @@ class TextOffenseType(graphene.ObjectType):
     average = graphene.Float(
         description='Avarage calc on based on bad words counting!'
     )
-    result = graphene.Boolean(
+    is_offensive = graphene.Boolean(
         description='True if the sentence is offensive, False if not!'
     )
 
@@ -69,7 +66,7 @@ class WordOffenseType(graphene.ObjectType):
     Padrão de objeto contido na lista retornada como resposta na requisição de
     processamento de wordOffenseLevel (Nível Ofensivo de palavras)
     """
-    root = graphene.String(description='Stemmed root from the inputed term')
+    token = graphene.String(description='Analysed token.')
     value = graphene.Int(
         description='Integer that indicates if the term may be offensive! 1 for yes 0 for no.'
     )
@@ -147,6 +144,28 @@ class CustomPipelineType(graphene.ObjectType):
     )
 
 
+class RemoveStopWordsType(graphene.ObjectType):
+    """
+    Estrutura de resposta para consultas de remoção de stop words.
+    """
+    inputed_data = graphene.String(description='Inputed text.')
+    text_output = graphene.String(description='Text without the stop words.')
+    list_output = graphene.List(
+        graphene.String,
+        description='Token list from the processed data without the stop words.'
+    )
+    removed_tokens = graphene.List(
+        graphene.String,
+        description='Stop words removed from the inputed data.'
+    )
+    removed_tokens_count = graphene.Int(
+        description='Number of stop words removed.'
+    )
+
+    def resolve_removed_tokens_count(self, info, **kwargs):
+        return len(self.removed_tokens)
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -170,10 +189,7 @@ class Query(graphene.ObjectType):
         """
         Processa a requisição de sentence segmentation conforme RF001.
         """
-        text = kwargs.get('text')
-        segmented_text = sent_tokenize(text)
-
-        return segmented_text
+        return Resolver.resolve_sentence_segmentation(kwargs.get('text'))
 
     ##########################################################################
     # WORD TOKENIZE
@@ -191,10 +207,7 @@ class Query(graphene.ObjectType):
         """
         Processa requisição para atomização
         """
-        text = kwargs.get('text')
-        tokenized = word_tokenize(text)
-
-        return tokenized
+        return Resolver.resolve_tokenize(kwargs.get('text'))
 
     ##########################################################################
     # PART OF SPEECH
@@ -212,14 +225,8 @@ class Query(graphene.ObjectType):
         """
         Processa requisição de part of speech
         """
-        data = SPACY(kwargs.get('text'))
-        response = [
-            PartOfSpeechType(
-                token=token.text,
-                tag=token.pos_,
-                description=get_pos_tag_description(token.pos_)) for token in data
-        ]
-        return response
+        resolved_data = Resolver.resolve_part_of_speech(kwargs.get('text'))
+        return [PartOfSpeechType(**data) for data in resolved_data]
 
     ##########################################################################
     # LEMMING
@@ -243,34 +250,23 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # STOP WORDS
     ##########################################################################
-    remove_stop_words = graphene.List(
-        graphene.String,
+    remove_stop_words = graphene.Field(
+        RemoveStopWordsType,
         text=graphene.String(
             required=True,
             description='Input text for process the stop words removal.'
-        ),
-        algorithm=graphene.Argument(
-            enums.Algorithms,
-            description='Defines an processing algorithm. Default NLTK'
         ),
         description='Remove stop words from inputed text.'
     )
 
     def resolve_remove_stop_words(self, info, **kwargs):
         """
-        Remove as palavras vazias do texto inserido e retorna uma lista das
-        palávras restantes no texto.
+        Remove as palavras vazias do texto inserido e retorna um objeto
+        detalhando a operação realizada.
         """
-        algorithm = kwargs.get('algorithm', 'nltk')
-        text_input = kwargs.get('text')
-        portuguese_stopwords = stopwords.words('portuguese')
-
-        if algorithm == 'nltk':
-            tokens = word_tokenize(text_input)
-            return [word for word in tokens if word not in portuguese_stopwords]
-
-        doc = SPACY(text_input)
-        return [word for word in doc if not word.is_stop]
+        input_data = kwargs.get('text')
+        resolved_data = Resolver.resolve_datailed_stopword_removal(input_data)
+        return RemoveStopWordsType(inputed_data=input_data, **resolved_data)
 
     ##########################################################################
     # DEPENDENCY PARSING
@@ -306,16 +302,8 @@ class Query(graphene.ObjectType):
         """
         Processa a resolução de entidades nomeadas a partir de um texto.
         """
-        text_input = kwargs.get('text')
-        doc = SPACY(text_input)
-
-        return [
-            NamedEntityType(
-                term=ent.text,
-                entity=ent.label_,
-                description=get_entity_description(ent.label_)
-            ) for ent in doc.ents
-        ]
+        resolved_data = Resolver.resolve_named_entity(kwargs.get('text'))
+        return [NamedEntityType(**data) for data in resolved_data]
 
     ##########################################################################
     # Word Polarity
@@ -327,10 +315,6 @@ class Query(graphene.ObjectType):
             description='List of words to process',
             required=True
         ),
-        algorithm=graphene.Argument(
-            enums.WordPolarityAlgorithms,
-            description='Algorythm to process the the text. Default=LEXICAL'
-        )
     )
 
     def resolve_word_polarity(self, info, **kwargs):
@@ -339,24 +323,15 @@ class Query(graphene.ObjectType):
         O Processamento aceita uma lista de palávras, retornando desta forma,
         uma lista de objetos contendo a palávra processada e sua polaridade.
         """
-        word_list = kwargs.get('word_list')
-        algorithm = kwargs.get('algorithm', 'lexical')
-
-        if algorithm == 'spacy':
-            doc = [SPACY(word) for word in word_list]
-            return [WordPolarityType(word=w.text, polarity=w.sentiment) for w in doc]
-
-        return [WordPolarityType(word=w, polarity=get_word_polarity(w)) for w in word_list]
+        resolved_data = Resolver.resolve_word_polarity(kwargs.get('word_list'))
+        return [WordPolarityType(**data) for data in resolved_data]
 
     ##########################################################################
     # text classifier
     ##########################################################################
     sentiment_extraction = graphene.Float(
         text=graphene.String(required=True, description='Text to classify.'),
-        algorithm=graphene.Argument(
-            enums.WordPolarityAlgorithms,
-            description='Defines the processing algorithm backend. Default=LEXICAL'
-        )
+        description='Extracts text sentiment with lexical analysis.'
     )
 
     def resolve_sentiment_extraction(self, info, **kwargs):
@@ -366,14 +341,7 @@ class Query(graphene.ObjectType):
         representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
-        text = kwargs.get('text')
-        algorithm = kwargs.get('algorithm', 'lexical')
-
-        if algorithm == 'spacy':
-            doc = SPACY(text)
-            return doc.sentiment
-
-        return text_classifier(text)
+        return Resolver.resolve_lexical_text_classifier(kwargs.get('text'))
 
     ##########################################################################
     # Text Offense
@@ -388,9 +356,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_text_offense_level(self, info, **kwargs):
-        text = kwargs.get('text')
-        result, average = get_offense_level(text)
-        return TextOffenseType(text=text, average=average, result=result)
+        resolved_data = Resolver.resolve_text_offense(kwargs.get('text'))
+        return TextOffenseType(text=kwargs.get('text'), **resolved_data)
 
     ##########################################################################
     # Word Offense
@@ -406,20 +373,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_word_offense_level(self, info, **kwargs):
-        words = kwargs.get('word_list')
-        data = get_word_offense_level(words)
-
-        response = []
-        for result in data:
-            response.append(
-                WordOffenseType(
-                    root=result[0],
-                    value=result[1],
-                    is_offensive=bool(result[1])
-                )
-            )
-
-        return response
+        resolved_data = Resolver.resolve_word_offense(kwargs.get('word_list'))
+        return [WordOffenseType(**data) for data in resolved_data]
 
     ##########################################################################
     # stemming
@@ -452,30 +407,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_inspect_tokens(self, info, **kwargs):
-        response = []
-        tokens = SPACY(kwargs.get('text'))
-
-        for token in tokens:
-            response.append(
-                InspectTokenType(
-                    token=token.text,
-                    is_alpha=token.is_alpha,
-                    is_ascii=token.is_ascii,
-                    is_currency=token.is_currency,
-                    is_digit=token.is_digit,
-                    is_punct=token.is_punct,
-                    is_space=token.is_space,
-                    is_stop=is_stopword(token.text),
-                    lemma=token.lemma_,
-                    pos_tag=get_pos_tag_description(token.pos_),
-                    vector=token.vector,
-                    polarity=get_word_polarity(token.text),
-                    is_offensive=get_offense_level(token.text)[0],
-                    root=stem([token.text])[0]
-                )
-            )
-
-        return response
+        resolved_data = Resolver.resolve_token_inspection(kwargs.get('text'))
+        return [InspectTokenType(**data) for data in resolved_data]
 
     ##########################################################################
     # Similarity
@@ -493,10 +426,10 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_similarity(self, info, **kwargs):
-        first = SPACY(kwargs.get('first_token'))
-        second = SPACY(kwargs.get('second_token'))
-
-        return first.similarity(second)
+        return Resolver.resolve_similarity(
+            kwargs.get('first_token'),
+            kwargs.get('second_token')
+        )
 
     ##########################################################################
     # Custom pipeline

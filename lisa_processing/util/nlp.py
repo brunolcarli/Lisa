@@ -9,6 +9,7 @@ from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from django.conf import settings
+from lisa_processing.util.normalizer import Normalizer
 
 
 def get_pols_from_corpus():
@@ -197,6 +198,35 @@ def remove_stopwords(sentence):
     """
     portuguese_stopwords = set(stopwords.words('portuguese'))
     return [word for word in sentence if word not in portuguese_stopwords]
+
+
+def detailed_stopword_removal(input_data):
+    """
+    Remove as stop words do texto fornecido, reotornando um objeto detalhado
+    da operação, contendo quais palávras foram removidas, um output em forma
+    de lista e um output em forma de texto.
+
+    param : input_data : <list> : Lista de tokens
+    return <dict>
+    """
+    normalizer = Normalizer()
+    portuguese_stopwords = set(stopwords.words('portuguese'))
+    removed = []  # tokens que serão removidos, ou seja, os stop words;
+    non_stop = []  # tokens que não são stop words;
+
+    for token in input_data:
+        if token in portuguese_stopwords:
+            removed.append(token)
+        else:
+            non_stop.append(token)
+
+    output = {
+        'removed_tokens': removed,
+        'list_output': non_stop,
+        'text_output': normalizer.list_to_string(non_stop),
+    }
+
+    return output
 
 
 def is_stopword(token):

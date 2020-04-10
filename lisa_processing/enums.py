@@ -8,6 +8,7 @@ class Algorithms(Enum):
     SPACY = 'spacy'
     NLTK = 'nltk'
 
+
 class WordPolarityAlgorithms(Enum):
     """
     Algoritmos para processar polaridade de palavras
