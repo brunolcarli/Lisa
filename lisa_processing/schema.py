@@ -410,30 +410,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_inspect_tokens(self, info, **kwargs):
-        response = []
-        tokens = SPACY(kwargs.get('text'))
-
-        for token in tokens:
-            response.append(
-                InspectTokenType(
-                    token=token.text,
-                    is_alpha=token.is_alpha,
-                    is_ascii=token.is_ascii,
-                    is_currency=token.is_currency,
-                    is_digit=token.is_digit,
-                    is_punct=token.is_punct,
-                    is_space=token.is_space,
-                    is_stop=is_stopword(token.text),
-                    lemma=token.lemma_,
-                    pos_tag=get_pos_tag_description(token.pos_),
-                    vector=token.vector,
-                    polarity=get_word_polarity(token.text),
-                    is_offensive=get_offense_level(token.text)[0],
-                    root=stem([token.text])[0]
-                )
-            )
-
-        return response
+        resolved_data = Resolver.resolve_token_inspection(kwargs.get('text'))
+        return [InspectTokenType(**data) for data in resolved_data]
 
     ##########################################################################
     # Similarity
