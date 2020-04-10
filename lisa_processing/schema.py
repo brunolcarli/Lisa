@@ -5,7 +5,6 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
-import spacy
 import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
@@ -21,8 +20,6 @@ from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
 
-
-SPACY = spacy.load('pt')
 
 class DependencyParseType(graphene.ObjectType):
     """
