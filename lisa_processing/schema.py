@@ -69,7 +69,7 @@ class WordOffenseType(graphene.ObjectType):
     Padrão de objeto contido na lista retornada como resposta na requisição de
     processamento de wordOffenseLevel (Nível Ofensivo de palavras)
     """
-    root = graphene.String(description='Stemmed root from the inputed term')
+    token = graphene.String(description='Analysed token.')
     value = graphene.Int(
         description='Integer that indicates if the term may be offensive! 1 for yes 0 for no.'
     )
@@ -376,20 +376,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_word_offense_level(self, info, **kwargs):
-        words = kwargs.get('word_list')
-        data = get_word_offense_level(words)
-
-        response = []
-        for result in data:
-            response.append(
-                WordOffenseType(
-                    root=result[0],
-                    value=result[1],
-                    is_offensive=bool(result[1])
-                )
-            )
-
-        return response
+        resolved_data = Resolver.resolve_word_offense(kwargs.get('word_list'))
+        return [WordOffenseType(**data) for data in resolved_data]
 
     ##########################################################################
     # stemming

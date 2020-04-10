@@ -223,7 +223,8 @@ class Resolver:
             full_token = token or pair
             output.append({
                 'token': full_token[0],
-                'is_offensive': bool(pair[1])
+                'is_offensive': bool(pair[1]),
+                'value': pair[1]
             })
 
         return output
@@ -293,7 +294,6 @@ class Resolver:
         execute = {
             str: resolve_from_string,
             list: resolve_from_list
-            
         }
 
         return execute.get(type(input_data))(input_data)
