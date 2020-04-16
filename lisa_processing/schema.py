@@ -451,6 +451,21 @@ class Query(graphene.ObjectType):
         )
 
     ##########################################################################
+    # Punct removal
+    ##########################################################################
+    remove_punctuation = graphene.List(
+        graphene.String,
+        text=graphene.String(
+            required=True,
+            description='Text to be processed.'
+        ),
+        description='Removes all puncts from text. Returns a list of tokens.'
+    )
+
+    def resolve_remove_punctuation(self, info, **kwargs):
+        return Resolver.resolve_remove_puncts(kwargs.get('text'))
+
+    ##########################################################################
     # Custom pipeline
     ##########################################################################
     custom_pipeline = graphene.Field(
