@@ -166,6 +166,20 @@ class RemoveStopWordsType(graphene.ObjectType):
         return len(self.removed_tokens)
 
 
+class WordTokenizeType(graphene.ObjectType):
+    """
+    Estrutura de resposta para consultas de tokenização.
+    """
+    inputed_data = graphene.String(description='Inputed text.')
+    output = graphene.List(
+        graphene.String,
+        description='List of tokens extracted from inputed data.'
+    )
+    num_tokens = graphene.Int(
+        description='Number of tokens found at inputed data.'
+    )
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -194,8 +208,8 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # WORD TOKENIZE
     ##########################################################################
-    word_tokenize = graphene.List(
-        graphene.String,
+    word_tokenize = graphene.Field(
+        WordTokenizeType,
         text=graphene.String(
             required=True,
             description='Text input for word tokenizing.'
@@ -207,7 +221,12 @@ class Query(graphene.ObjectType):
         """
         Processa requisição para atomização
         """
-        return Resolver.resolve_tokenize(kwargs.get('text'))
+        tokens = Resolver.resolve_tokenize(kwargs.get('text'))
+        return WordTokenizeType(
+            inputed_data=kwargs.get('text'),
+            output=tokens,
+            num_tokens=len(tokens)
+        )
 
     ##########################################################################
     # PART OF SPEECH
