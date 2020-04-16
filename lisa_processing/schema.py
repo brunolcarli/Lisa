@@ -180,6 +180,18 @@ class WordTokenizeType(graphene.ObjectType):
     )
 
 
+class SentenceSegmentationType(graphene.ObjectType):
+    """
+    Estrutura de apresentação da fragmentação de sentenças.
+    """
+    inputed_data = graphene.String(description='Inputed text.')
+    output = graphene.List(
+        graphene.String,
+        description='List of sentences extracted from inputed text.'
+    )
+    num_sentences = graphene.Int(description='Total sentences found in text.')
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -190,8 +202,8 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # SENTENCE SEGMENTATION
     ##########################################################################
-    sentence_segmentation = graphene.List(
-        graphene.String,
+    sentence_segmentation = graphene.Field(
+        SentenceSegmentationType,
         text=graphene.String(
             description='Input text for sentece segmentation!',
             required=True
@@ -203,7 +215,12 @@ class Query(graphene.ObjectType):
         """
         Processa a requisição de sentence segmentation conforme RF001.
         """
-        return Resolver.resolve_sentence_segmentation(kwargs.get('text'))
+        sentences = Resolver.resolve_sentence_segmentation(kwargs.get('text'))
+        return SentenceSegmentationType(
+            inputed_data=kwargs.get('text'),
+            output=sentences,
+            num_sentences=len(sentences)
+        )
 
     ##########################################################################
     # WORD TOKENIZE
