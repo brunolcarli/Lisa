@@ -81,8 +81,7 @@ def text_classifier(text):
     param text : <str>
     return : <float>
     """
-    text_emotion = 0
-    sentence_emotions = []
+    sentence_sentiments = []
 
     negation_words = stemming([
         'jamais', 'nada', 'nem', 'nenhum', 'ninguém', 'nunca', 'não',
@@ -107,45 +106,47 @@ def text_classifier(text):
 
     for sentence in sentences:
 
-        # Cada sentença inicia neutra
-        sentence_emotion = 0
-
-        # Tokenization
+        # Pré-processa os dados de texto
         tokens = word_tokenize(sentence)
+        tokens = remove_stopwords(tokens)
+        tokens = remove_punctuations(tokens)
+        tokens = stemming(tokens)
 
-        # Sanitiza os tokens removendo os stop words
-        tokenized = remove_stopwords(tokens)
+        # Verifica a existência de termos intensificadores
+        text_is_intensified = any(token in intensifiers for token in tokens)
 
-        # Sanitiza removendo pontuações
-        document = remove_punctuations(tokenized)
+        # Verifica a inversão de valor por meio de termos de negação
+        text_has_negation = any(token in negation_words for token in tokens)
 
-        document = stemming(document)
+        # Verifica a existência de termos redutores
+        text_is_reduced = any(token in reduction_words for token in tokens)
 
-        # polariza a sentença
-        for word in document:
-            polarity = get_word_polarity(word)
-            if any(w in intensifiers for w in document):
-                if any(w in negation_words for w in document):
-                    polarity /= 3
+        # Polariza o texto em análise
+        for token in tokens:
+            # Identifica a polaridade do token
+            token_polarity = get_word_polarity(token)
+
+            if text_is_intensified:
+                if text_has_negation:
+                    token_polarity /= 3
                 else:
-                    polarity *= 3
+                    token_polarity *= 3
 
-            elif any(w in reduction_words for w in document):
-                if any(w in negation_words for w in document):
-                    polarity *= 3
+            elif text_is_reduced:
+                if text_has_negation:
+                    token_polarity *= 3
                 else:
-                    polarity /= 3
+                    token_polarity /= 3
 
             else:
-                # Adaptei: O original utiliza um -1 * polaridade
-                polarity = 1 * polarity
+                token_polarity = 1 * token_polarity
     
-            sentence_emotions.append((sentence_emotion + polarity))
+            sentence_sentiments.append((token_polarity))
 
-    # A polaridade total do texto é a média de emoções nas sentenças
-    text_emotion = (sum(sentence_emotions) / len(sentence_emotions)) * 100
+    # A polaridade total do texto é a média de sentimento nas sentenças
+    text_sentiment = (sum(sentence_sentiments) / len(sentence_sentiments)) * 100
 
-    return text_emotion * .01
+    return text_sentiment * .01
 
 
 def binary_wordmatch(input_text, word_list):
