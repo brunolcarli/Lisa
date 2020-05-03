@@ -1,6 +1,6 @@
 <table align="center"><tr><td align="center" width="9999">
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ec/Lisa_Simpson.png/220px-Lisa_Simpson.png" align="center" width="100" alt="Project icon">
 
+<img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ec/Lisa_Simpson.png/220px-Lisa_Simpson.png" align="center" width="100" alt="Project icon">
 
 # LISA
 
@@ -11,8 +11,8 @@
 
 <div align="center">
 
->![Version badge](https://img.shields.io/badge/version-0.2.2-silver.svg)
-![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)
+> [![Version badge](https://img.shields.io/badge/version-0.2.3-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
 
@@ -29,13 +29,12 @@ Demo:
 
 Atualmente a LISA está disponvível em sua versão demo e pode ser acessada através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
 
+Por exemplo:
+
 ## Curl
 
 ```bash
-$ curl -X POST \ 
-     -H "Content-Type: application/json" \
-     --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' \
-     https://lisa--brunolcarli.repl.co/graphql/
+$ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' https://lisa--brunolcarli.repl.co/graphql/
 ```
 
 *Saída:*
@@ -48,20 +47,19 @@ $ curl -X POST \
 ## Python
 
 ```python
->>> import requests
->>> URL = 'https://lisa--brunolcarli.repl.co/graphql/'
->>> data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
->>> request = requests.post(URL, json={'query': data})
->>> request.status_code
-200
->>> request.text
-'{"data":{"sentimentExtraction":0.03333333333333333}}'
->>>
+import requests
+URL = 'https://lisa--brunolcarli.repl.co/graphql/'
+data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
+request = requests.post(URL, json={'query': data})
+print(request.status_code)  # 200
+print(request.text)  # '{"data":{"sentimentExtraction":0.03333333333333333}}'
 ```
+
+Pode-se utilizar outros métodos e linguagens da mesma forma para consumir a API.
 
 ## Playground
 
-Ao acessar diretemente o endpoint através do navegador você terá acesso ao *playground* onde poderá escrever diretamente as queries para LISA:
+Ao acessar diretemente o endpoint de desenvolvimento através do navegador você terá acesso ao [*playground*](https://lisa--brunolcarli.repl.co/graphql) onde poderá escrever diretamente as queries para LISA:
 
 <table align="center"><tr><td align="center" width="9999">
 <img src="https://i.ibb.co/27dTgKD/LISA-SCREENSAVE.gif" align="center" width="1200" alt="Project icon">
@@ -69,16 +67,18 @@ Ao acessar diretemente o endpoint através do navegador você terá acesso ao *p
 
 </table>    
 
-<hr />
-
 A documentação das consultas disponíveis pode ser conferida [aqui](https://github.com/brunolcarli/Lisa/wiki/Queries).
 
-# Rodando localmente
+<hr />
+
+# Desenvolvedores
+
+## Rodando localmente
 
 ![Linux Badge](https://img.shields.io/badge/OS-Linux-black.svg)
 ![Apple badge](https://badgen.net/badge/OS/OSX/:color?icon=apple)
 
-Para rodar a plataforma, primeiramente é necessário inicializar um novo ambiente virtual (virtualenv) e instalar as depenências:
+Para rodar a plataforma, primeiramente é necessário inicializar um novo ambiente virtual (virtualenv) e instalar as dependências:
 
 ```
 $ make install
@@ -97,7 +97,7 @@ $ make run
 ```
 
 
-O serviço estará disponível em `localhost:2154/graphql`
+O serviço estará disponível em `localhost:2154/graphql/`
 
 <hr />
 
@@ -144,6 +144,11 @@ $ make container
 
 # Doações
 
-Se esta plataforma lhe ajudou de alguma forma, despertou interesse ou se simplesmente quiseres colaborar nos custos par amanter a plataforma no ambiente de produção, eu agradeço de coração <3
+A plataforma de processamento de linguagem natural e análise de sentimentos (LISA) em versão de produção é hospedada em um servidor VPS privado que atualmente custa *$7 dollar* mensais, o desenvolvedor investe este valor mensalmente para que o serviço possa ser disponibilizado abertamente para a comunidade de software, por isto pede-se encarecidamente que se com qualquer quantia que possa ser realizada através de colaborações no paypal para ajudar a manter os custos, será de extrema valia não somente para o desenvolvedor, mas para toda a comunidade.
+
+
+<div align="center">
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
+
+</div>

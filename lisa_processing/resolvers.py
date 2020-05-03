@@ -396,3 +396,37 @@ class Resolver:
         second = SPACY(second)
 
         return first.similarity(second)
+
+    @staticmethod
+    def resolve_sentiment_batch_extraction(input_data):
+        """
+        Resolve a extração de sentimentos em lote.
+
+        param : input_data : <list>
+        return : <dict>
+        """
+        positive_sentiments = []
+        negative_sentiments = []
+        neutral_sentiments = []
+
+        for data in input_data:
+            extraction = {'text': data, 'sentiment': text_classifier(data)}
+            if extraction['sentiment'] > 0:
+                positive_sentiments.append(extraction)
+
+            elif extraction['sentiment'] < 0:
+                negative_sentiments.append(extraction)
+
+            else:
+                neutral_sentiments.append(extraction)
+
+        count = len(positive_sentiments) + \
+                len(negative_sentiments) + \
+                len(neutral_sentiments)
+
+        return {
+            'count': count,
+            'positive_sentiments': positive_sentiments,
+            'negative_sentiments': negative_sentiments,
+            'neutral_sentiments': neutral_sentiments,
+        }
