@@ -81,6 +81,7 @@ def text_classifier(text):
     param text : <str>
     return : <float>
     """
+    corpus = get_pols_from_corpus()
     sentence_sentiments = []
 
     negation_words = stemming([
@@ -124,7 +125,12 @@ def text_classifier(text):
         # Polariza o texto em análise
         for token in tokens:
             # Identifica a polaridade do token
-            token_polarity = get_word_polarity(token)
+            if token.lower() in corpus.keys():
+                token_polarity = int(corpus[token.lower()])
+            else:
+                # TODO: talvez, através de um algoritmo de agrupamento,
+                # classificar o termo baseado em outros termos similares
+                token_polarity = 0
 
             if text_is_intensified:
                 if text_has_negation:
