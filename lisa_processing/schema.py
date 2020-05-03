@@ -192,6 +192,82 @@ class SentenceSegmentationType(graphene.ObjectType):
     num_sentences = graphene.Int(description='Total sentences found in text.')
 
 
+class SentimentExtractionType(graphene.ObjectType):
+    """
+    Estrutura de apresentação da extração de sentimento de um texto.
+    """
+    text = graphene.String(description='Processed text.')
+    sentiment = graphene.Float(description='Extracted sentiment.')
+
+
+class SentimentBatchExtractionType(graphene.ObjectType):
+    """
+    Estrutura de apresentação do processamento de análise de
+    sentimentos sobre N entradas de texto.
+    """
+    count = graphene.Int(
+        description='Number of texts inputed.'
+    )
+    positive_occurrences_count = graphene.Int(
+        description='Number of positive occurrences found.'
+    )
+    neutral_occurrences_count = graphene.Int(
+        description='Number of neutral occurrences found.'
+    )
+    negative_occurrences_count = graphene.Int(
+        description='Number of negative occurrences found.'
+    )
+    positive_percentage = graphene.Float(
+        description='Percentage of positive occurrences.'
+    )
+    neutral_percentage = graphene.Float(
+        description='Percentage of neutral occurrences.'
+    )
+    negative_percentage = graphene.Float(
+        description='Percentage of negative occurrences.'
+    )
+    total_sentiment = graphene.Float(
+        description='Total sentiment extracted from all samples together.'
+    )
+    positive_sentiments = graphene.List(
+        SentimentExtractionType,
+        description='List of positive occurrences and its extracted sentiment.'
+    )
+    neutral_sentiments = graphene.List(
+        SentimentExtractionType,
+        description='List of neutral occurrences and its extracted sentiment.'
+    )
+    negative_sentiments = graphene.List(
+        SentimentExtractionType,
+        description='List of negative occurrences and its extracted sentiment.'
+    )
+
+    def resolve_positive_occurrences_count(self, info, **kwargs):
+        return len(self.positive_sentiments)
+
+    def resolve_neutral_occurrences_count(self, info, **kwargs):
+        return len(self.neutral_sentiments)
+
+    def resolve_negative_occurrences_count(self, info, **kwargs):
+        return len(self.negative_sentiments)
+
+    def resolve_positive_percentage(self, info, **kwargs):
+        return len(self.positive_sentiments) / self.count
+
+    def resolve_neutral_percentage(self, info, **kwargs):
+        return len(self.neutral_sentiments) / self.count
+
+    def resolve_negative_percentage(self, info, **kwargs):
+        return len(self.negative_sentiments) / self.count
+
+    def resolve_total_sentiment(self, info, **kwargs):
+        # Neutros são sempre 0 então somamos apenas positivos e negativos
+        positives = [data.get('sentiment', 0) for data in self.positive_sentiments]
+        negatives = [data.get('sentiment', 0) for data in self.negative_sentiments]
+
+        return sum(positives + negatives)
+
+
 class Query(graphene.ObjectType):
     """
     Queries da lisa:
@@ -544,6 +620,23 @@ class Query(graphene.ObjectType):
             output=output,
             token_inspection=token_inspection
         )
+
+    ##########################################################################
+    # Sentiment Batch
+    ##########################################################################
+    sentiment_batch_extraction = graphene.Field(
+        SentimentBatchExtractionType,
+        text_list=graphene.List(
+            graphene.String,
+            description='List of texts for sentiment extraction!',
+            required=True
+        ),
+        description='Extract the sentiment of each given text.'
+    )
+
+    def resolve_sentiment_batch_extraction(self, info, **kwargs):
+        data = Resolver.resolve_sentiment_batch_extraction(kwargs['text_list'])
+        return SentimentBatchExtractionType(**data)
 
     ##########################################################################
     # Help
