@@ -5,6 +5,7 @@ r"""
 
 contact info: brunolcarli@gmail.com
 """
+import logging
 import graphene
 from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
@@ -19,6 +20,9 @@ from lisa_processing.util.nlp import (get_word_polarity, text_classifier,
                                       is_stopword)
 from lisa_processing.util.tools import (get_pos_tag_description,
                                        get_entity_description)
+
+
+logger = logging.getLogger('lisa')
 
 
 class DependencyParseType(graphene.ObjectType):
@@ -291,6 +295,7 @@ class Query(graphene.ObjectType):
         """
         Processa a requisição de sentence segmentation conforme RF001.
         """
+        logger.info(info.context._body.decode('utf-8'))
         sentences = Resolver.resolve_sentence_segmentation(kwargs.get('text'))
         return SentenceSegmentationType(
             inputed_data=kwargs.get('text'),
@@ -314,6 +319,7 @@ class Query(graphene.ObjectType):
         """
         Processa requisição para atomização
         """
+        logger.info(info.context._body.decode('utf-8'))
         tokens = Resolver.resolve_tokenize(kwargs.get('text'))
         return WordTokenizeType(
             inputed_data=kwargs.get('text'),
@@ -337,6 +343,7 @@ class Query(graphene.ObjectType):
         """
         Processa requisição de part of speech
         """
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_part_of_speech(kwargs.get('text'))
         return [PartOfSpeechType(**data) for data in resolved_data]
 
@@ -357,6 +364,7 @@ class Query(graphene.ObjectType):
         Retorna o processamento de lematização de uma entrada de texto ou
         lista de palavras.
         """
+        logger.info(info.context._body.decode('utf-8'))
         return Resolver.resolve_lemming(kwargs.get('text'))
 
     ##########################################################################
@@ -376,6 +384,7 @@ class Query(graphene.ObjectType):
         Remove as palavras vazias do texto inserido e retorna um objeto
         detalhando a operação realizada.
         """
+        logger.info(info.context._body.decode('utf-8'))
         input_data = kwargs.get('text')
         resolved_data = Resolver.resolve_datailed_stopword_removal(input_data)
         return RemoveStopWordsType(inputed_data=input_data, **resolved_data)
@@ -396,6 +405,7 @@ class Query(graphene.ObjectType):
         Processa o parsing de dependências e retorna uma lista contendo
         as palávras da sentença, seus dependentes e antecessores.
         """
+        logger.info(info.context._body.decode('utf-8'))
         return Resolver.resolve_dependency_parse(kwargs.get('text'))
 
     ##########################################################################
@@ -414,6 +424,7 @@ class Query(graphene.ObjectType):
         """
         Processa a resolução de entidades nomeadas a partir de um texto.
         """
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_named_entity(kwargs.get('text'))
         return [NamedEntityType(**data) for data in resolved_data]
 
@@ -435,6 +446,7 @@ class Query(graphene.ObjectType):
         O Processamento aceita uma lista de palávras, retornando desta forma,
         uma lista de objetos contendo a palávra processada e sua polaridade.
         """
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_word_polarity(kwargs.get('word_list'))
         return [WordPolarityType(**data) for data in resolved_data]
 
@@ -453,6 +465,7 @@ class Query(graphene.ObjectType):
         representar a negatividade, neutralidade ou positividade
         do texto processado.
         """
+        logger.info(info.context._body.decode('utf-8'))
         return Resolver.resolve_lexical_text_classifier(kwargs.get('text'))
 
     ##########################################################################
@@ -468,6 +481,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_text_offense_level(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_text_offense(kwargs.get('text'))
         return TextOffenseType(text=kwargs.get('text'), **resolved_data)
 
@@ -485,6 +499,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_word_offense_level(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_word_offense(kwargs.get('word_list'))
         return [WordOffenseType(**data) for data in resolved_data]
 
@@ -501,6 +516,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_stemming(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         data = Resolver.resolve_stemming(kwargs.get('text'))
 
         paired_data = list(zip(kwargs.get('text').split(), data))
@@ -519,6 +535,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_inspect_tokens(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         resolved_data = Resolver.resolve_token_inspection(kwargs.get('text'))
         return [InspectTokenType(**data) for data in resolved_data]
 
@@ -538,6 +555,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_similarity(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         return Resolver.resolve_similarity(
             kwargs.get('first_token'),
             kwargs.get('second_token')
@@ -556,6 +574,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_remove_punctuation(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         return Resolver.resolve_remove_puncts(kwargs.get('text'))
 
     ##########################################################################
@@ -586,6 +605,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_custom_pipeline(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
+
         text = kwargs.get('text')
         output = text
 
@@ -635,6 +656,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_sentiment_batch_extraction(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
+
         data = Resolver.resolve_sentiment_batch_extraction(kwargs['text_list'])
         return SentimentBatchExtractionType(**data)
 
@@ -651,6 +674,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_help(self, info, **kwargs):
+        logger.info(info.context._body.decode('utf-8'))
         language_options = {
             'en': 'En: For more detailed information please visit the ' \
                   'official docs page on GitHub repository!',
@@ -671,6 +695,7 @@ class Query(graphene.ObjectType):
         """
         Isso é um ovo de páscoa.
         """
+        logger.info(info.context._body.decode('utf-8'))
         lisa_ascii = [
             r'''|          _     _            |''',
             r'''|        ,':`._.':`.          |''',

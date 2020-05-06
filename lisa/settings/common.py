@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from django.utils.log import DEFAULT_LOGGING
 
-VERSION = '0.2.3'
+VERSION = '0.2.4'
 
 BANNER = f'''
 ====================
@@ -134,4 +135,48 @@ GRAPHENE = {
 CORPORA_PATH = {
     'hateset': 'corpora/lexical_data/hateset.txt',
     'sentilex_lem': 'corpora/lexical_data/SentiLex-lem-PT02.txt',
+}
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s'
+        },
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'lisa/logs/lisa.log',
+            'maxBytes': 50000,
+            'backupCount': 2,
+            'formatter': 'default',
+        },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+    },
+    'loggers': {
+        # default for all undefined Python modules
+        '': {
+            'level': 'CRITICAL',
+            'handlers': ['console', 'logfile'],
+        },
+        # our application code
+        'lisa': {
+            'level': 'INFO',
+            'handlers': ['console', 'logfile'],
+            # avoid double logging because of root logger
+            'propagate': False,
+        },
+        # default runserver request logging
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+    },
 }

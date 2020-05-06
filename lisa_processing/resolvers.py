@@ -1,6 +1,7 @@
 """
 Resolução dos algoritmos chamados nas queries.
 """
+import logging
 import itertools
 import spacy
 from difflib import get_close_matches as closest_token
@@ -14,8 +15,11 @@ from lisa_processing.util.normalizer import Normalizer
 from lisa_processing.util.tools import (get_entity_description,
                                         get_pos_tag_description)
 
+logger = logging.getLogger('lisa')
 
+logger.info('Loading Spacy...')
 SPACY = spacy.load('pt')
+logger.info('Done!')
 
 
 class Resolver:
