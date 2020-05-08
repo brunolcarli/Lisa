@@ -25,7 +25,7 @@ Demo:
 
 [Lisa](https://pt.wikipedia.org/wiki/Lisa_Simpson) é um serviço dedicado à execução e processamento de tarefas de linguagem natural e análise de sentimentos em texto (text mining). O nome é uma referência à fantástica personagem criada por [Matt Groening](https://pt.wikipedia.org/wiki/Matt_Groening). A plataforma também parte integrante do Trabalho de Conclusão de Curso desenvolvido para aquisição do grau de *Bacharel* em Engenharia de Software pela Universidade [Unicesumar](https://www.unicesumar.edu.br/home/).
 
-# Consumindo
+# Consumindo a API
 
 Atualmente a LISA está disponvível em sua versão demo e pode ser acessada através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
 
@@ -48,9 +48,13 @@ $ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ se
 
 ```python
 import requests
+
+
 URL = 'https://lisa--brunolcarli.repl.co/graphql/'
 data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
 request = requests.post(URL, json={'query': data})
+
+
 print(request.status_code)  # 200
 print(request.text)  # '{"data":{"sentimentExtraction":0.03333333333333333}}'
 ```
@@ -62,12 +66,16 @@ Pode-se utilizar outros métodos e linguagens da mesma forma para consumir a API
 Ao acessar diretemente o endpoint de desenvolvimento através do navegador você terá acesso ao [*playground*](https://lisa--brunolcarli.repl.co/graphql) onde poderá escrever diretamente as queries para LISA:
 
 <table align="center"><tr><td align="center" width="9999">
-<img src="https://i.ibb.co/27dTgKD/LISA-SCREENSAVE.gif" align="center" width="1200" alt="Project icon">
+<img src="https://i.ibb.co/GQ162Wj/capa-readme.gif" align="center" width="1200" alt="Project icon">
 </td></tr>
 
-</table>    
+</table>
 
-A documentação das consultas disponíveis pode ser conferida [aqui](https://github.com/brunolcarli/Lisa/wiki/Queries).
+## Veja também
+
+- [Get Started Ilustrado](https://github.com/brunolcarli/Lisa/wiki/Noob-Guide---Get-Started)
+
+- [Documentação das consultas disponíveis](https://github.com/brunolcarli/Lisa/wiki/Queries).
 
 <hr />
 
@@ -141,14 +149,3 @@ $ make container
 ```
 
 <hr />
-
-# Doações
-
-A plataforma de processamento de linguagem natural e análise de sentimentos (LISA) em versão de produção é hospedada em um servidor VPS privado que atualmente custa *$7 dollar* mensais, o desenvolvedor investe este valor mensalmente para que o serviço possa ser disponibilizado abertamente para a comunidade de software, por isto pede-se encarecidamente que se com qualquer quantia que possa ser realizada através de colaborações no paypal para ajudar a manter os custos, será de extrema valia não somente para o desenvolvedor, mas para toda a comunidade.
-
-
-<div align="center">
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
-
-</div>
