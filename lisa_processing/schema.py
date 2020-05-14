@@ -231,7 +231,10 @@ class SentimentBatchExtractionType(graphene.ObjectType):
         description='Percentage of negative occurrences.'
     )
     total_sentiment = graphene.Float(
-        description='Total sentiment extracted from all samples together.'
+        description='Total sentiment sum extracted from all samples together.'
+    )
+    mean_sentiment = graphene.Float(
+        description='Mean sentiment value from all samples together.'
     )
     positive_sentiments = graphene.List(
         SentimentExtractionType,
@@ -264,12 +267,12 @@ class SentimentBatchExtractionType(graphene.ObjectType):
     def resolve_negative_percentage(self, info, **kwargs):
         return len(self.negative_sentiments) / self.count
 
-    def resolve_total_sentiment(self, info, **kwargs):
-        # Neutros são sempre 0 então somamos apenas positivos e negativos
-        positives = [data.get('sentiment', 0) for data in self.positive_sentiments]
-        negatives = [data.get('sentiment', 0) for data in self.negative_sentiments]
+    # def resolve_total_sentiment(self, info, **kwargs):
+    #     # Neutros são sempre 0 então somamos apenas positivos e negativos
+    #     positives = [data.get('sentiment', 0) for data in self.positive_sentiments]
+    #     negatives = [data.get('sentiment', 0) for data in self.negative_sentiments]
 
-        return sum(positives + negatives)
+    #     return sum(positives + negatives)
 
 
 class Query(graphene.ObjectType):

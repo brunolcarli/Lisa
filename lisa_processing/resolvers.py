@@ -424,13 +424,25 @@ class Resolver:
             else:
                 neutral_sentiments.append(extraction)
 
+        # total de amostras avaliadas
         count = len(positive_sentiments) + \
                 len(negative_sentiments) + \
                 len(neutral_sentiments)
 
+        # Calcula o sentimento total
+        positives = [data.get('sentiment', 0) for data in positive_sentiments]
+        negatives = [data.get('sentiment', 0) for data in negative_sentiments]
+
+        # Neutros são sempre 0 então somamos apenas positivos e negativos
+        total_sentiment = sum(positives + negatives)
+
+        # A média de sentimento é a razão do total pelo número de possibilidades
+        mean_sentiment = total_sentiment / 3  # positivos, negativos e neutros
         return {
             'count': count,
             'positive_sentiments': positive_sentiments,
             'negative_sentiments': negative_sentiments,
             'neutral_sentiments': neutral_sentiments,
+            'total_sentiment': total_sentiment,
+            'mean_sentiment': mean_sentiment
         }
