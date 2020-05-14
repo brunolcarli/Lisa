@@ -11,7 +11,7 @@
 
 <div align="center">
 
-> [![Version badge](https://img.shields.io/badge/version-0.2.4-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+> [![Version badge](https://img.shields.io/badge/version-0.2.5-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 [![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
@@ -49,11 +49,9 @@ $ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ se
 ```python
 import requests
 
-
 URL = 'https://lisa--brunolcarli.repl.co/graphql/'
 data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
 request = requests.post(URL, json={'query': data})
-
 
 print(request.status_code)  # 200
 print(request.text)  # '{"data":{"sentimentExtraction":0.03333333333333333}}'
