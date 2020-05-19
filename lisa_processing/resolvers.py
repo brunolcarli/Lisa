@@ -437,7 +437,7 @@ class Resolver:
         total_sentiment = sum(positives + negatives)
 
         # A média de sentimento é a razão do total pelo número de possibilidades
-        mean_sentiment = total_sentiment / 3  # positivos, negativos e neutros
+        mean_sentiment = total_sentiment / count
         return {
             'count': count,
             'positive_sentiments': positive_sentiments,

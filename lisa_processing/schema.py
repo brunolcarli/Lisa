@@ -267,13 +267,6 @@ class SentimentBatchExtractionType(graphene.ObjectType):
     def resolve_negative_percentage(self, info, **kwargs):
         return len(self.negative_sentiments) / self.count
 
-    # def resolve_total_sentiment(self, info, **kwargs):
-    #     # Neutros são sempre 0 então somamos apenas positivos e negativos
-    #     positives = [data.get('sentiment', 0) for data in self.positive_sentiments]
-    #     negatives = [data.get('sentiment', 0) for data in self.negative_sentiments]
-
-    #     return sum(positives + negatives)
-
 
 class Query(graphene.ObjectType):
     """
