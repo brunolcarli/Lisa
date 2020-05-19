@@ -1,8 +1,5 @@
-Django==2.1.4
-django-filter==2.0.0
-django-graphql-jwt==0.1.5
-graphene==2.1.8
-graphene-django==2.2.0
-graphql-relay==2.0.0
-PyJWT==1.7.1
-pytz==2019.3
+-r common.txt
+
+pylint==2.4.1
+bumpversion==0.5.3
+python-decouple==3.1
