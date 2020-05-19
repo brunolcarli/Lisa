@@ -12,22 +12,22 @@
 <div align="center">
 
 > [![Version badge](https://img.shields.io/badge/version-0.2.5-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
-[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+
+>[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
-
-Demo:
-> [![Run on Repl.it](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+[![Run on Repl.it](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
 
 </div>
 
 <hr />
 
-[Lisa](https://pt.wikipedia.org/wiki/Lisa_Simpson) é um serviço dedicado à execução e processamento de tarefas de linguagem natural e análise de sentimentos em texto (text mining). O nome é uma referência à fantástica personagem criada por [Matt Groening](https://pt.wikipedia.org/wiki/Matt_Groening). A plataforma também parte integrante do Trabalho de Conclusão de Curso desenvolvido para aquisição do grau de *Bacharel* em Engenharia de Software pela Universidade [Unicesumar](https://www.unicesumar.edu.br/home/).
+[Lisa](https://pt.wikipedia.org/wiki/Lisa_Simpson) é um serviço dedicado à execução de tarefas de processamento de linguagem natural e análise de sentimentos em texto (text mining). O nome é uma referência à fantástica personagem criada por [Matt Groening](https://pt.wikipedia.org/wiki/Matt_Groening). A plataforma foi parte integrante do Trabalho de Conclusão de Curso desenvolvido para aquisição do grau de *Bacharel* em Engenharia de Software pela Universidade [Unicesumar](https://www.unicesumar.edu.br/home/).
 
 # Consumindo a API
 
-Atualmente a LISA está disponvível em sua versão demo e pode ser acessada através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
+O serviço está disponvível e pode ser acessado através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
 
 Por exemplo:
 
@@ -71,9 +71,11 @@ Ao acessar diretemente o endpoint de desenvolvimento através do navegador você
 
 ## Veja também
 
-- [Get Started Ilustrado](https://github.com/brunolcarli/Lisa/wiki/Noob-Guide---Get-Started)
+- [Get Started Ilustrado](https://github.com/brunolcarli/Lisa/wiki/Noob-Guide---Get-Started);
 
-- [Documentação das consultas disponíveis](https://github.com/brunolcarli/Lisa/wiki/Queries).
+- [Documentação das consultas disponíveis](https://github.com/brunolcarli/Lisa/wiki/Queries);
+
+- [Estudo de caso](https://github.com/brunolcarli/Lisa/wiki);
 
 <hr />
 
@@ -117,7 +119,6 @@ O serviço estará disponível em `localhost:2154/graphql/`
 
 </table>
 
-![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
 
 Crie um arquivo `lisa.env` em  `lisa/environment/lisa.env` e adicone as variáveis de ambiente:
 
