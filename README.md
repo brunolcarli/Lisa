@@ -11,6 +11,7 @@
 
 <div align="center">
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7fabe8d8f1694ef09e5a264bad3393ef)](https://app.codacy.com/manual/brunolcarli/Lisa?utm_source=github.com&utm_medium=referral&utm_content=brunolcarli/Lisa&utm_campaign=Badge_Grade_Dashboard)
 > [![Version badge](https://img.shields.io/badge/version-1.0.0-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 
 >[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
