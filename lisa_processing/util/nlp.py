@@ -109,7 +109,6 @@ def text_classifier(text):
 
         # Pré-processa os dados de texto
         tokens = word_tokenize(sentence)
-        tokens = remove_stopwords(tokens)
         tokens = remove_punctuations(tokens)
         tokens = stemming(tokens)
 
@@ -369,10 +368,11 @@ def basic_preprocess(text):
     sentences = sent_tokenize(text)
     pre_processed_tokens = []
     for sentence in sentences:
-        tokenized = word_tokenize(sentence)
-        raw_tokens = remove_punctuations(tokenized)
-        clean_tokens = remove_stopwords(raw_tokens)
-        for token in clean_tokens:
+        tokens = word_tokenize(sentence)
+        tokens = remove_punctuations(tokens)
+        tokens = remove_stopwords(tokens)
+
+        for token in tokens:
             pre_processed_tokens.append(token)
 
     return pre_processed_tokens
