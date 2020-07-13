@@ -11,12 +11,11 @@
 
 <div align="center">
 
-> [![Version badge](https://img.shields.io/badge/version-1.0.2-silver.svg)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+> [![Version badge](https://img.shields.io/badge/version-1.0.2-silver.svg)](http://104.237.1.145:2154/graphql/?query=query%20%7B%0A%20%20lisa%0A%7D)
 
->[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
+>[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](http://104.237.1.145:2154/graphql/?query=query%20%7B%0A%20%20lisa%0A%7D)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PPYA5P239NRML&currency_code=USD&source=url)
-[![Run on Repl.it](https://repl.it/badge/github/brunolcarli/Lisa)](https://lisa--brunolcarli.repl.co/graphql/?query=query%7B%0A%09lisa%0A%7D)
 ![docker badge](https://badgen.net/badge/icon/docker?icon=docker&label)
 
 </div>
@@ -27,14 +26,14 @@
 
 # Consumindo a API
 
-O serviço está disponvível e pode ser acessado através do endpoint `https://lisa--brunolcarli.repl.co/graphql/` aceitando requisições GraphQl via internet.
+O serviço está disponvível e pode ser acessado através do endpoint `http://104.237.1.145:2154/graphql/` aceitando requisições GraphQl via internet.
 
 Por exemplo:
 
 ## Curl
 
 ```bash
-$ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' https://lisa--brunolcarli.repl.co/graphql/
+$ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ sentimentExtraction(text: \"A dúvida é o princípio da sabedoria.\") }" }' http://104.237.1.145:2154/graphql/
 ```
 
 *Saída:*
@@ -49,7 +48,7 @@ $ curl -X POST -H "Content-Type: application/json" --data '{ "query": "query{ se
 ```python
 import requests
 
-URL = 'https://lisa--brunolcarli.repl.co/graphql/'
+URL = 'http://104.237.1.145:2154/graphql/'
 data = '{sentimentExtraction(text: "A dúvida é o princípio da sabedoria")}'
 request = requests.post(URL, json={'query': data})
 
@@ -61,7 +60,7 @@ Pode-se utilizar outros métodos e linguagens da mesma forma para consumir a API
 
 ## Playground
 
-Ao acessar diretemente o endpoint de desenvolvimento através do navegador você terá acesso ao [*playground*](https://lisa--brunolcarli.repl.co/graphql) onde poderá escrever diretamente as queries para LISA:
+Ao acessar diretemente o endpoint de desenvolvimento através do navegador você terá acesso ao [*playground*](http://104.237.1.145:2154/graphql/) onde poderá escrever diretamente as queries para LISA:
 
 <table align="center"><tr><td align="center" width="9999">
 <img src="https://i.ibb.co/GQ162Wj/capa-readme.gif" align="center" width="1200" alt="Project icon">
