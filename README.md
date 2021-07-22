@@ -11,7 +11,7 @@
 
 <div align="center">
 
-> [![Version badge](https://img.shields.io/badge/version-1.1.0-silver.svg)](http://104.237.1.145:2154/graphql/?query=query%20%7B%0A%20%20lisa%0A%7D)
+> [![Version badge](https://img.shields.io/badge/version-1.1.1-silver.svg)](http://104.237.1.145:2154/graphql/?query=query%20%7B%0A%20%20lisa%0A%7D)
 
 >[![GraphQl Badge](https://badgen.net/badge/icon/graphql/pink?icon=graphql&label)](http://104.237.1.145:2154/graphql/?query=query%20%7B%0A%20%20lisa%0A%7D)
 [![Docs Link](https://badgen.net/badge/docs/github_wiki?icon=github)](https://github.com/brunolcarli/Lisa/wiki)
