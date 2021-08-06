@@ -766,7 +766,21 @@ class Query(graphene.ObjectType):
     ##########################################################################
     # Termos armazenados
     ##########################################################################
-    know_terms = graphene.List(TermType)
+    know_terms = graphene.List(
+        TermType,
+        description='Queries LISA know terms.',
+        text__icontains=graphene.String(description='Filter by partial text.'),
+        polarity__gte=graphene.Float(
+            description='Filter by sentiment pol greather equal.'
+        ),
+        polarity__lte=graphene.Float(
+            description='Filter by sentiment pol lesser equal.'
+        ),
+        is_stop=graphene.Boolean(description='Filter by stop words'),
+        is_punct=graphene.Boolean(description='Filter by punctuations.'),
+        is_digit=graphene.Boolean(description='Filter by digits.'),
+        is_offensive=graphene.Boolean(description='Filter by offensive text.')
+    )
 
     def resolve_know_terms(self, info, **kwargs):
         """
