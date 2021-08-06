@@ -14,6 +14,7 @@ from lisa_processing.util.nlp import (stemming, text_classifier,
 from lisa_processing.util.normalizer import Normalizer
 from lisa_processing.util.tools import (get_entity_description,
                                         get_pos_tag_description)
+from lisa_processing.models import Term
 
 logger = logging.getLogger('lisa')
 
@@ -456,3 +457,18 @@ class Resolver:
         return : <list>
         """
         return [ch for ch in input_data]
+
+
+class ResolveFromDB:
+    """
+    Process data from local database storage.
+    """
+
+    @staticmethod
+    def get_terms(**kwargs):
+        """
+        Read terms stored on LISA database
+        """
+        if not kwargs:
+            return Term.objects.all()
+        return Term.objects.filter(**kwargs)
