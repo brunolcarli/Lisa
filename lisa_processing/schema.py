@@ -34,7 +34,7 @@ class TermType(graphene.ObjectType):
     part_of_speech = graphene.String()
     lemma = graphene.String()
     root = graphene.String
-    polarity = graphene.Int()
+    polarity = graphene.Float()
     meaning = DynamicScalar()
     is_currency = graphene.Boolean()
     is_punct = graphene.Boolean()
@@ -789,3 +789,30 @@ class Query(graphene.ObjectType):
         logger.info(info.context._body.decode('utf-8'))
         
         return ResolveFromDB.get_terms(**kwargs)
+
+
+class CreateTerm(graphene.relay.ClientIDMutation):
+    """
+    Registra um novo termo no banco de dados.
+    """
+    term = graphene.Field(TermType)
+
+    class Input:
+        text = graphene.String(required=True)
+        part_of_speech = graphene.String()
+        lemma = graphene.String()
+        root = graphene.String()
+        polarity = graphene.Float()
+        meaning = DynamicScalar()
+        is_currency = graphene.Boolean()
+        is_digit = graphene.Boolean()
+        is_punct = graphene.Boolean()
+        is_stop = graphene.Boolean()
+        is_offensive = graphene.Boolean()
+
+    def mutate_and_get_payload(self, info, **kwargs):
+        term = ResolveFromDB.create_term(**kwargs)    
+        return CreateTerm(term)
+
+class Mutation(object):
+    create_term = CreateTerm.Field()
