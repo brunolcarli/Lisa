@@ -39,3 +39,15 @@ replit_pipeline:
 container:
 	docker-compose build
 	docker-compose up
+
+
+populate_terms:
+	python -c "from lisa_processing.util.populate import populate_terms; populate_terms()"
+
+populate_hateset:
+	python -c "from lisa_processing.util.populate import populate_from_hateset; populate_from_hateset()"
+
+
+populate:
+	make populate_terms
+	make populate_hateset
