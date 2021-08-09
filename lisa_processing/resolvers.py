@@ -490,7 +490,6 @@ class ResolveFromDB:
         else:
             data['part_of_speech'] = kwargs.get('part_of_speech')
 
-
         if not kwargs.get('lemma'):
             lemma = Resolver.resolve_lemming(text)
             data['lemma'] = lemma[0]
