@@ -787,7 +787,7 @@ class Query(graphene.ObjectType):
         Consulta os termos conhecidos pela LISA
         """
         logger.info(info.context._body.decode('utf-8'))
-        
+
         return ResolveFromDB.get_terms(**kwargs)
 
 
@@ -811,8 +811,9 @@ class CreateTerm(graphene.relay.ClientIDMutation):
         is_offensive = graphene.Boolean()
 
     def mutate_and_get_payload(self, info, **kwargs):
-        term = ResolveFromDB.create_term(**kwargs)    
+        term = ResolveFromDB.create_term(**kwargs)
         return CreateTerm(term)
+
 
 class Mutation(object):
     create_term = CreateTerm.Field()

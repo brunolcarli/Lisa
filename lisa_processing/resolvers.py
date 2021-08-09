@@ -473,7 +473,6 @@ class ResolveFromDB:
             return Term.objects.all()
         return Term.objects.filter(**kwargs)
 
-
     @staticmethod
     def create_term(**kwargs):
         """
@@ -511,7 +510,7 @@ class ResolveFromDB:
             pol = kwargs.get('polarity')
             pol = -1 if pol < -1 else pol
             pol = 1 if pol > 1 else pol
-            data['polarity'] = pol            
+            data['polarity'] = pol
 
         if not kwargs.get('is_currency'):
             is_currency = tokens[0].is_currency

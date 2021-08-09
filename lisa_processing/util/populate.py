@@ -1,13 +1,12 @@
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lisa.settings.development")
-
-import django
-django.setup()
-
 import spacy
 from lisa_processing.util.nlp import stemming
 from lisa_processing.models import Term
+import django
 
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lisa.settings.development")
+django.setup()
 nlp = spacy.load('pt')
 
 
@@ -20,7 +19,7 @@ def populate_terms():
         sentilex = [i.strip().lower() for i in f.readlines()]
 
     with open('corpora/lexical_data/hateset.txt', 'r') as f:
-        hateset = [i.strip().lower() for i in f.readlines()]
+        hateset = set([i.strip().lower() for i in f.readlines()])
 
     # suite.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
     for row in sentilex:
@@ -39,17 +38,17 @@ def populate_terms():
 
         tokens = nlp(term)
 
-        data['is_currency'] = all([i.is_currency for i in tokens])
-        data['is_punct'] = all([i.is_punct for i in tokens])
-        data['is_stop'] = all([i.is_stop for i in tokens])
-        data['is_digit'] = all([i.is_digit for i in tokens])
+        data['is_currency'] = tokens[0].is_currency
+        data['is_punct'] = tokens[0].is_punct
+        data['is_stop'] = tokens[0].is_stop
+        data['is_digit'] = tokens[0].is_digit
 
-        data['lemma'] = (' '.join([i.lemma_ for i in tokens])).strip()
+        data['lemma'] = tokens[0].lemma
         data['root'] = stemming([term])
 
         try:
             Term.objects.create(**data)
-        except:
+        except Exception as _:
             continue
 
     print(f'Created {Term.objects.all().count()} objects.')
@@ -83,10 +82,9 @@ def populate_from_hateset():
 
         try:
             Term.objects.create(**data)
-        except:
+        except Exception as _:
             continue
 
         counter += 1
 
     print(f'Created {Term.objects.all().count()} objects.')
-
