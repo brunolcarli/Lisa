@@ -1,12 +1,13 @@
 import os
 import spacy
 from lisa_processing.util.nlp import stemming
-from lisa_processing.models import Term
 import django
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lisa.settings.development")
 django.setup()
+
+from lisa_processing.models import Term
 nlp = spacy.load('pt')
 
 
@@ -18,38 +19,24 @@ def populate_terms():
     with open('corpora/lexical_data/SentiLex-lem-PT02.txt', 'r') as f:
         sentilex = [i.strip().lower() for i in f.readlines()]
 
-    with open('corpora/lexical_data/hateset.txt', 'r') as f:
-        hateset = set([i.strip().lower() for i in f.readlines()])
-
     # suite.PoS=Adj;TG=HUM:N0;POL:N0=-1;ANOT=MAN
     for row in sentilex:
         data = {}
-        term, meta_data = row.split('.')
+        text, meta_data = row.split('.')
         pos, _, pol, *_ = meta_data.split(';')
         _, pos = pos.split('=')
         _, pol = pol.split('=')
 
-        data['text'] = term
+        data['text'] = text
         data['part_of_speech'] = pos
         data['polarity'] = pol
 
-        if term in hateset:
-            data['is_offensive'] = True
-
-        tokens = nlp(term)
-
-        data['is_currency'] = tokens[0].is_currency
-        data['is_punct'] = tokens[0].is_punct
-        data['is_stop'] = tokens[0].is_stop
-        data['is_digit'] = tokens[0].is_digit
-
-        data['lemma'] = tokens[0].lemma
-        data['root'] = stemming([term])
-
         try:
-            Term.objects.create(**data)
+            term = Term.objects.create(**data)
         except Exception as _:
             continue
+
+        term.save()
 
     print(f'Created {Term.objects.all().count()} objects.')
 
@@ -62,29 +49,33 @@ def populate_from_hateset():
     with open('corpora/lexical_data/hateset.txt', 'r') as f:
         hateset = [i.strip().lower() for i in f.readlines()]
 
-    counter = 0
     for sample in hateset:
-        data = {}
-        data['text'] = sample
-        data['is_offensive'] = True
 
-        tokens = nlp(sample)
+        term, _ = Term.objects.get_or_create(text=sample)
 
-        data['part_of_speech'] = tokens[0].pos_
-        data['polarity'] = sum([i.sentiment for i in tokens]) / len(tokens)
-        data['is_currency'] = all([i.is_currency for i in tokens])
-        data['is_punct'] = all([i.is_punct for i in tokens])
-        data['is_stop'] = all([i.is_stop for i in tokens])
-        data['is_digit'] = all([i.is_digit for i in tokens])
+        term.is_offensive = True
+        term.save()
 
-        data['lemma'] = (' '.join([i.lemma_ for i in tokens])).strip()
-        data['root'] = stemming([sample])
+    print('DB update from hateset')
 
-        try:
-            Term.objects.create(**data)
-        except Exception as _:
-            continue
 
-        counter += 1
+def update_terms_metadata():
+    """
+    Atualiza os metadados dos termos do banco de dados
+    """
+    terms = Term.objects.all()
 
-    print(f'Created {Term.objects.all().count()} objects.')
+    for term in terms:
+        tokens = nlp(term.text)
+
+        term.part_of_speech = tokens[0].pos_
+        term.is_currency = tokens[0].is_currency
+        term.is_punct = tokens[0].is_punct
+        term.is_stop = tokens[0].is_stop
+        term.is_digit = tokens[0].is_digit
+
+        term.lemma = tokens[0].lemma
+        term.root = stemming([term.text])
+        term.save()
+
+    print('Updated terms metadata.')

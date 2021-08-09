@@ -47,7 +47,10 @@ populate_terms:
 populate_hateset:
 	python -c "from lisa_processing.util.populate import populate_from_hateset; populate_from_hateset()"
 
+populate_metadata:
+	python -c "from lisa_processing.util.populate import update_terms_metadata; update_terms_metadata()"
 
 populate:
 	make populate_terms
 	make populate_hateset
+	make populate_metadata
