@@ -150,7 +150,7 @@ def text_classifier(text):
 
     # A polaridade total do texto é a média de sentimento nas sentenças
     text_sentiment = (sum(sentence_sentiments) / len(sentence_sentiments)) * 100
-    bias = float(f'.{len(tokens)}')
+    bias = float(f'.{len(tokens)}') - 0.1
     return min([(text_sentiment * .01) + bias, 1])
 
 
