@@ -2,6 +2,18 @@
 version: '3'
 
 services:
+  nginx:
+    build: nginx/
+    restart: on-failure
+    container_name: lisa_nginx
+    ports:
+      - "2154:2154"
+    volumes:
+      - .:/app
+      - static_data:/app/static
+    depends_on:
+      - lisa
+
 
   lisa_db:
     image: mariadb:10.3
