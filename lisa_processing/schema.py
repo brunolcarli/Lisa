@@ -184,6 +184,20 @@ class WordTokenizeType(graphene.ObjectType):
     )
 
 
+class CharCounterType(graphene.ObjectType):
+    """
+    Estrutura de resposta para consultas de contagem de caracteres.
+    """
+    inputed_data = graphene.String(description='Inputed text.')
+    output = graphene.List(
+        graphene.String,
+        description='List of chars extracted from inputed text.'
+    )
+    num_chars = graphene.Int(
+        description='Number of chars found at inputed text.'
+    )
+
+
 class SentenceSegmentationType(graphene.ObjectType):
     """
     Estrutura de apresentação da fragmentação de sentenças.
@@ -297,6 +311,31 @@ class Query(graphene.ObjectType):
             inputed_data=kwargs.get('text'),
             output=sentences,
             num_sentences=len(sentences)
+        )
+
+    ##########################################################################
+    # CHAR count
+    ##########################################################################
+    char_count = graphene.Field(
+        CharCounterType,
+        text=graphene.String(
+            description='Input text for char segmentation count!',
+            required=True
+        ),
+        description='Counts the number of char in the text'
+    )
+
+    def resolve_char_count(self, info, **kwargs):
+        """
+        Processa requisição de contagem de caracteres.
+        """
+        logger.info(info.context._body.decode('utf-8'))
+        chars = Resolver.resolve_char_count(kwargs.get('text'))
+
+        return CharCounterType(
+            inputed_data=kwargs.get('text'),
+            output=chars,
+            num_chars=len(chars)
         )
 
     ##########################################################################

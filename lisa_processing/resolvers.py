@@ -446,3 +446,13 @@ class Resolver:
             'total_sentiment': total_sentiment,
             'mean_sentiment': mean_sentiment
         }
+
+    @staticmethod
+    def resolve_char_count(input_data):
+        """
+        Resolve a conbtagem de caracteres.
+
+        param : input_data : <str>
+        return : <list>
+        """
+        return [ch for ch in input_data]
