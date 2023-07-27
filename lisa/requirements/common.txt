@@ -7,5 +7,5 @@ graphql-relay==2.0.0
 PyJWT==1.7.1
 pytz==2019.3
 
-nltk==3.4.5
+nltk==3.6.5
 spacy==2.2.2
