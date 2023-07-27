@@ -8,3 +8,15 @@ class Query(lisa_processing.schema.Query, graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query)
+
+mutations = (
+    graphene.ObjectType,
+    lisa_processing.schema.Mutation
+)
+
+
+class Mutation(*mutations):
+    pass
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

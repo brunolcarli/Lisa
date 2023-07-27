@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 from django.utils.log import DEFAULT_LOGGING
 
-VERSION = '1.1.1'
+VERSION = '1.1.2'
 
 BANNER = f'''
 ====================

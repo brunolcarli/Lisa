@@ -14,6 +14,7 @@ from lisa_processing.util.nlp import (stemming, text_classifier,
 from lisa_processing.util.normalizer import Normalizer
 from lisa_processing.util.tools import (get_entity_description,
                                         get_pos_tag_description)
+from lisa_processing.models import Term
 
 logger = logging.getLogger('lisa')
 
@@ -456,3 +457,95 @@ class Resolver:
         return : <list>
         """
         return [ch for ch in input_data]
+
+
+class ResolveFromDB:
+    """
+    Process data from local database storage.
+    """
+
+    @staticmethod
+    def get_terms(**kwargs):
+        """
+        Read terms stored on LISA database
+        """
+        if not kwargs:
+            return Term.objects.all()
+        return Term.objects.filter(**kwargs)
+
+    @staticmethod
+    def create_term(**kwargs):
+        """
+        Creates a new term on the database.
+        if no parameters given, default
+        values will be setted.
+        """
+        text = kwargs['text']
+        tokens = SPACY(text)
+
+        data = {'text': text}
+        if not kwargs.get('part_of_speech'):
+            pos = Resolver.resolve_part_of_speech(text)[0]
+            data['part_of_speech'] = f'{pos["tag"]}:{pos["description"]}'
+        else:
+            data['part_of_speech'] = kwargs.get('part_of_speech')
+
+        if not kwargs.get('lemma'):
+            lemma = Resolver.resolve_lemming(text)
+            data['lemma'] = lemma[0]
+        else:
+            data['lemma'] = kwargs.get('lemma')
+
+        if not kwargs.get('root'):
+            root = Resolver.resolve_stemming(text)
+            data['root'] = root[0]
+        else:
+            data['root'] = kwargs.get('root')
+
+        if not kwargs.get('polarity'):
+            pol = Resolver.resolve_word_polarity(text)
+            data['polarity'] = pol[0].get('polarity')
+        else:
+            pol = kwargs.get('polarity')
+            pol = -1 if pol < -1 else pol
+            pol = 1 if pol > 1 else pol
+            data['polarity'] = pol
+
+        if not kwargs.get('is_currency'):
+            is_currency = tokens[0].is_currency
+            data['is_currency'] = is_currency
+        else:
+            data['is_currency'] = kwargs.get('is_currency')
+
+        if not kwargs.get('is_punct'):
+            is_punct = tokens[0].is_punct
+            data['is_punct'] = is_punct
+        else:
+            data['is_punct'] = kwargs.get('is_punct')
+
+        if not kwargs.get('is_stop'):
+            is_stop = tokens[0].is_stop
+            data['is_stop'] = is_stop
+        else:
+            data['i_stop'] = kwargs.get('is_stop')
+
+        if not kwargs.get('is_digit'):
+            is_digit = tokens[0].is_digit
+            data['is_digit'] = is_digit
+        else:
+            data['is_digit'] = kwargs.get('is_digit')
+
+        if not kwargs.get('is_offensive'):
+            is_offensive = Resolver.resolve_text_offense(text)
+            data['is_offensive'] = is_offensive.get('is_offensive')
+        else:
+            data['is_offensive'] = kwargs.get('is_offensive')
+
+        data['meaning'] = kwargs.get('meaning')
+
+        try:
+            term = Term.objects.create(**data)
+        except Exception as e:
+            raise e
+
+        return term

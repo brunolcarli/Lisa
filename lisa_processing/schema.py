@@ -11,7 +11,7 @@ from django.conf import settings
 from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from lisa_processing import enums
-from lisa_processing.resolvers import Resolver
+from lisa_processing.resolvers import Resolver, ResolveFromDB
 from lisa_processing.util.types import DynamicScalar
 from lisa_processing.util.pipelines import CustomPipeline
 from lisa_processing.util.nlp import stemming as stem
@@ -23,6 +23,24 @@ from lisa_processing.util.tools import (get_pos_tag_description,
 
 
 logger = logging.getLogger('lisa')
+
+
+class TermType(graphene.ObjectType):
+    """
+    Padrão de resposta para processamentos de Termos armazenados no banco
+    de dados.
+    """
+    text = graphene.String()
+    part_of_speech = graphene.String()
+    lemma = graphene.String()
+    root = graphene.String
+    polarity = graphene.Float()
+    meaning = DynamicScalar()
+    is_currency = graphene.Boolean()
+    is_punct = graphene.Boolean()
+    is_stop = graphene.Boolean()
+    is_offensive = graphene.Boolean()
+    is_digit = graphene.Boolean()
 
 
 class DependencyParseType(graphene.ObjectType):
@@ -744,3 +762,58 @@ class Query(graphene.ObjectType):
             f'Version: {settings.VERSION}'
         ]
         return lisa_ascii
+
+    ##########################################################################
+    # Termos armazenados
+    ##########################################################################
+    know_terms = graphene.List(
+        TermType,
+        description='Queries LISA know terms.',
+        text__icontains=graphene.String(description='Filter by partial text.'),
+        polarity__gte=graphene.Float(
+            description='Filter by sentiment pol greather equal.'
+        ),
+        polarity__lte=graphene.Float(
+            description='Filter by sentiment pol lesser equal.'
+        ),
+        is_stop=graphene.Boolean(description='Filter by stop words'),
+        is_punct=graphene.Boolean(description='Filter by punctuations.'),
+        is_digit=graphene.Boolean(description='Filter by digits.'),
+        is_offensive=graphene.Boolean(description='Filter by offensive text.')
+    )
+
+    def resolve_know_terms(self, info, **kwargs):
+        """
+        Consulta os termos conhecidos pela LISA
+        """
+        logger.info(info.context._body.decode('utf-8'))
+
+        return ResolveFromDB.get_terms(**kwargs)
+
+
+class CreateTerm(graphene.relay.ClientIDMutation):
+    """
+    Registra um novo termo no banco de dados.
+    """
+    term = graphene.Field(TermType)
+
+    class Input:
+        text = graphene.String(required=True)
+        part_of_speech = graphene.String()
+        lemma = graphene.String()
+        root = graphene.String()
+        polarity = graphene.Float()
+        meaning = DynamicScalar()
+        is_currency = graphene.Boolean()
+        is_digit = graphene.Boolean()
+        is_punct = graphene.Boolean()
+        is_stop = graphene.Boolean()
+        is_offensive = graphene.Boolean()
+
+    def mutate_and_get_payload(self, info, **kwargs):
+        term = ResolveFromDB.create_term(**kwargs)
+        return CreateTerm(term)
+
+
+class Mutation(object):
+    create_term = CreateTerm.Field()
